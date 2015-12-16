@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="jiankong"  js="/wabacusdemo/js/demo.js,/wabacusdemo/js/testcallback.js,/webresources/script/validate.js">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px">
+		<report id="showjiankong" parenttitle="监控单位"  title="单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col property="unitlist" column="{non-fromdb}" label="单位列表" ></col>
+				<col property="casual" column="{non-fromdb}" label="抽检率" ></col>
+				<col property="intact" column="{non-fromdb}" label="完好率" ></col>
+			</display>
+			<format>
+				<value>
+					<![CDATA[
+					unitlist="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=jiankong_lianwang&id="+id+"',{width:600,title:'辅助信息'})>"+"查看"+"</a>";
+					casual="<a href='#' >"+"查看"+"</a>";
+					intact="<a href='#' >"+"查看"+"</a>";
+			   		]]>
+			  </value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='监控单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		</tabpanel>
+	</page>
+	
+	
+	
+	<page id="jiankong_lianwang"  js="/wabacusdemo/js/demo.js">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px">
+		<report id="showjiankong_lianwang" parenttitle="联网单位"  title="单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+						<value>
+							<![CDATA[MonitoringUnitId = '#data#']]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		</tabpanel>
+	</page>
+</applications>

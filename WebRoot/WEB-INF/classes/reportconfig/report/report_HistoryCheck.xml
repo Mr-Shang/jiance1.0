@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="historyCheck" js="/wabacusdemo/js/demo.js">
+		<report id="showHistoryCheck" title="历史联网单位查岗信息列表" type="listform">
+			<display> 	
+				<col column="CheckPersonName" label="查岗人" clickorderby="true"></col>
+				<col column="CheckTime" label="查岗时间" clickorderby="true"></col>
+				<col column="UnitId" label="UnitId" displaytype="hidden" clickorderby="true"></col>
+				<col column="UnitName" label="单位名称" clickorderby="true"></col>
+				<col column="UnitAddr" label="单位地址" clickorderby="true"></col>
+				<col column="HeadName" label="联系人" clickorderby="true"></col>
+				<col column="AnswerTime" label="应答时间" clickorderby="true"></col>
+				<col column="IsAnswer" label="是否应答" clickorderby="true"></col>
+				<col column="JoinTime" label="加入时间" clickorderby="true"></col>
+				<col column="NodeNum" label="总结点数" clickorderby="true"></col>
+				</display>
+				<sql>
+				<select>
+						<value>
+						<![CDATA[SELECT CheckInfo.* FROM CheckInfo where {#condition#} ]]>
+					</value>
+					<condition name="TxtUnitname" label="单位名称">
+					<value>
+						<![CDATA[UnitName like '#data#']]>
+						</value>
+					</condition>
+					<condition name="txtQCheckTime" datatype="" label="起始时间">
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[CheckTime >= '#data#']]>
+						</value>
+					</condition>
+					<condition name="txtZCheckTime" datatype="" label="终止时间">
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[CheckTime <= '#data#']]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	</page>
+</applications>
+				

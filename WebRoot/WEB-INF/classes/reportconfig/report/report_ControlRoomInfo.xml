@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="controlRoomInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.controlRoomInfoPageInterceptor">
+		<report id="showControlRoomInfo" title="消控室基本信息列表" type="editablelist2" rowselect="multiple-checkbox" servervalidateclass="com.ccu.jiaoyan.TestServervalidateControlRoom"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" width="200px" updatecol="@{UnitId}" filter="condition{txtUnitName}">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(所属单位必须选择)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				<col column="ControlRoomCode" label="消控室编号"  width="80px">
+					<inputbox servervalidate="isNotEmpty(消控室编号不能为空);isUniqueControlRoomCode(此消控室编号#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="ControlRoomName" label="消控室名称">
+					<inputbox servervalidate="isNotEmpty(消控室名称不能为空);isUniqueControlRoomName(此消控室名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="RoomAddr" label="消控室所在地" width="300px">
+					<inputbox jsvalidate="isNotEmpty(#data#消控室所在地不能为空)"></inputbox>
+				</col>
+				<col column="HeadName" label="负责人">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人不能为空)"></inputbox>
+				</col>
+				<col column="CreateTime" label="创建时间"  datatype="date" clickorderby="true">
+					<inputbox  type="datepicker" dateformat="yyyy-MM-dd" styleproperty="style='width:150px'" jsvalidate="isNotEmpty(#data#创建时间不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select ControlRoomInfo.*, UnitInfo.UnitName from ControlRoomInfo,UnitInfo where UnitInfo.id = ControlRoomInfo.UnitId and {#condition#} order by UnitInfo.UnitName asc,ControlRoomInfo.ControlRoomCode asc]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitInfo.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+					<condition name="txtControlRoomCode" label="消控室编号" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(ControlRoomCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="ControlRoomCode" title="消控室编号" matchmode="anywhere"></promptcol>
+						
+						       <datasource>        
+						       		<option dataset="@{select ControlRoomCode from ControlRoomInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtControlRoomName" label="消控室名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(ControlRoomName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="ControlRoomName" title="消控室名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select ControlRoomName from	ControlRoomInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				
+<!-- 				<insert pageurl="report{editforlistpageControlRoomInfo.report_update_add}" popupparams="{title:'新增消控室信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageControlRoomInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑消控室资料'}"/> -->
+<!-- 				<delete>
+					<value>
+						delete from ControlRoomInfo where id = @{id};
+					</value>
+				</delete> -->
+				<insert>
+					insert into ControlRoomInfo (id=newid(),@{ControlRoomName},@{ControlRoomCode},@{RoomAddr},@{HeadName},@{UnitId},@{CreateTime}); 
+				</insert>
+				<update>
+					update ControlRoomInfo (@{ControlRoomName},@{ControlRoomCode},@{RoomAddr},@{HeadName},@{UnitId},@{CreateTime}) where id = @{id};
+				</update>
+				
+			</sql>
+			<buttons buttonspacing="5">
+				<button name="addControlRoomInfo" label="添加" position="title">
+					addListReportNewDataRow('controlRoomInfo','showControlRoomInfo');
+				</button>
+				<button name="saveControlRoomInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'controlRoomInfo',savingReportIds:[{reportid:'showControlRoomInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteControlRoomInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete ControlRoomInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showControlRoomInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showControlRoomInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+	<page id="editforlistpageControlRoomInfo" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail" servervalidateclass="com.ccu.jiaoyan.TestServervalidateControlRoom">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="ControlRoomName" label="消控室名称">
+					<inputbox servervalidate="isNotEmpty(消控室名称不能为空);isUniqueControlRoomName(此消控室名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="ControlRoomCode" label="消控室编号" br="true">
+					<inputbox servervalidate="isNotEmpty(消控室编号不能为空);isUniqueControlRoomCode(此消控室编号#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="RoomAddr" label="消控室所在地">
+					<inputbox jsvalidate="isNotEmpty(#data#消控室所在地不能为空)"></inputbox>
+				</col>
+				<col column="HeadName" label="负责人"  br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位">
+					 <inputbox type="selectbox" jsvalidate="isNotEmpty(所属单位必须选择)">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+				<col column="CreateTime" label="建立时间" clickorderby="true">
+					<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" jsvalidate="isNotEmpty(#data#创建时间不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM ControlRoomInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into ControlRoomInfo (id=newid(),@{ControlRoomName},@{ControlRoomCode},@{RoomAddr},@{HeadName},@{UnitId},@{CreateTime});
+			  	</insert>
+			  	<update>
+			  		update ControlRoomInfo (@{ControlRoomName},@{ControlRoomCode},@{RoomAddr},@{HeadName},@{UnitId},@{CreateTime}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page>
+</applications>

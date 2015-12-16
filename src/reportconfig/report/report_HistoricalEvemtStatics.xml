@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="historicalEvemtStatics" js="/wabacusdemo/js/demo.js">
+				<report id="showMonitoring"  title="单位信息列表" type="editablelist" pagesize="3" >
+				<display>
+					<col column="id" displaytype="hidden"></col>
+					<col column="UnitCode" label="单位编码" ></col>
+					<col column="UnitName" label="单位名称"></col>
+					<col column="UnitAddr" label="单位地址"  width="300px"></col>
+					<col column="HeadName" label="联系人"></col>
+					<col column="HeadTel" label="联系电话" ></col>
+					<col property="auxiliary" column="{non-fromdb}" label="辅助信息" width="80px"></col>
+					<col property="state" column="{non-fromdb}" label="设备联网状态" width="100px"></col>
+					<col property="statistical" column="{non-fromdb}" label="统计" width="80px"></col>
+				</display>
+				<format>
+					<value>
+
+			   <![CDATA[
+					auxiliary="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=auxiliaryInfo&UnitName="+UnitName+"',{width:600,title:'辅助信息'})>"+"查看"+"</a>";
+			   		state="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=machineIsUsed&UnitName="+UnitName+"',{width:700,title:'设备联机状态'})>"+"查看"+"</a>";
+			   		statistical="<a href='javascript:void(0);'  onclick=wx_winpage('admin/eventStatistical/eventStatistical_load.action?unitId="+id+"',{width:800,height:450,title:'统计图'})>"+"查看"+"</a>";
+			   	]]>
+			  </value>
+				</format>
+				<sql>
+					<select>
+						<value>
+						<![CDATA[select * from UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtUnitType" hidden="true">
+							<value>
+								<![CDATA[UnitType='联网单位']]>
+							</value>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" labelposition="left" left="10">
+							<value>
+								<![CDATA[UnitName like  '%#data#%' ]]>
+							</value>
+							<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="联网单位" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					</select>
+				</sql>
+			</report>
+	
+	
+  <!--      <tabpanel id="row"  titlealign="center" border="1" bordercolor="#FF0000" margin="10px"  scrollX="true" scrollY="true" scrollstyle="image" width="800px" height="600px">
+	       <tabpanel id="colTotality1" titleposition="left" titlealign="top" parenttitle="查看" margin_left="true">
+					<report id="shieldUnitList" parenttitle="屏蔽单位" type="form" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="单位名称" label="单位名称" clickorderby="true"></col>
+							<col column="屏蔽单位数" label="屏蔽报警数"  clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[  select count(EventName) as 屏蔽单位数, UnitName as 单位名称 from EventInfo where EventName = '屏蔽单位' group by EventName ,UnitName]]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					<report id="shutDownUnitList" parenttitle="关机单位" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="UnitName" label="单位名称" clickorderby="true"></col>
+							<col column="HappenTime" label="关机时间" clickorderby="true"></col>
+							<col column="EventDescription" label="关机原因" clickorderby="true"></col>
+							
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select  UnitName,HappenTime,EventDescription from EventInfo where EventName = '关机单位']]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					<report id="faultUnitList" parenttitle="故障单位" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="单位名称 " label="单位名称" clickorderby="true"></col>
+							<col column="故障报警数" label="故障报警数" clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select count(EventName) as 故障报警数, UnitName as 单位名称  from EventInfo where EventName = '故障单位' group by EventName ,UnitName]]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					<report id="waterSystemErrorList" parenttitle="水系统异常" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="id" displaytype="hidden"></col>
+							<col column="UnitName" label="单位名称" clickorderby="true"></col>
+							<col column="UnitAddr" label="异常数" clickorderby="true"></col>
+							<col column="HeadName" label="总接口数" clickorderby="true"></col>
+							<col column="HeadTel" label="异常率" clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select * from UnitInfo where UnitType = '联网单位']]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					</tabpanel>
+				<tabpanel id="colTotality2" titleposition="left" titlealign="top" parenttitle="查看" margin_left="true">
+					<report id="violationUnitList" parenttitle="违规单位" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="UnitName" label="单位名称" clickorderby="true"></col>
+							<col column="HappenTime" label="违规时间" clickorderby="true"></col>
+							<col column="EventDescription" label="违规原因" clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select UnitName,HappenTime,EventDescription from EventInfo where EventName = '违规单位']]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					<report id="testUnitList" parenttitle="测试单位" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="UnitName" label="单位名称" clickorderby="true"></col>
+							<col column="HappenTime" label="测试开始时间" clickorderby="true"></col>
+							<col column="AlertDescription" label="备注" clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select UnitName,HappenTime,AlertDescription from EventInfo where EventName = '测试单位']]>
+								</value>
+							</select>
+						</sql>
+					</report>
+					<report id="fireUnitList" parenttitle="火警单位" type="listform" left="15px">
+						<display>
+							<col column="{sequence:1}" label="序号"></col>
+							<col column="单位名称" label="单位名称" clickorderby="true"></col>
+							<col column="火警报警数" label="火警报警数" clickorderby="true"></col>
+						</display>
+						<sql>
+							<select>
+								<value>
+									<![CDATA[select count(EventName) as 火警报警数, UnitName as 单位名称 from EventInfo where EventName = '火警单位' group by EventName ,UnitName]]>
+								</value>
+							</select>
+						</sql>
+					</report>
+				</tabpanel>
+			</tabpanel> -->
+			</page> 
+</applications>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	

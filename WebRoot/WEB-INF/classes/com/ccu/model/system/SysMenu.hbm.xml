@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.system.SysMenu" table="SysMenu" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <!-- 父菜单 -->
+        <!--  
+        <many-to-one name="parent" class="com.ccu.model.system.SysMenu" >
+            <column name="MenuPid" length="36" />
+        </many-to-one>
+        -->
+        <property name="menuName">
+            <column name="MenuName" not-null="true" sql-type="nvarchar(50)"/>
+        </property>
+        <property name="menuPath" >
+            <column name="MenuPath" sql-type="nvarchar(50)"/>
+        </property>
+        <property name="icon" >
+            <column name="Icon" sql-type="nvarchar(300)"/>
+        </property>
+        <!--菜单级别
+        <property name="menuLevel" >
+            <column name="MenuLevel" not-null="true" sql-type="nvarchar(50)"/>
+        </property>
+          -->
+        <property name="menuPid" type="java.lang.Integer" >
+        	<column name="MenuPid" not-null="true" ></column>
+        </property>
+        <property name="menuMid" type="java.lang.Integer" >
+        	<column name="MenuMid" not-null="true" ></column>
+        </property>
+        <property name="menuIndex" type="java.lang.Integer">
+        	<column name="MenuIndex" not-null="true"></column>
+        </property>
+        <!-- 
+	    <property name="menuTarget" >
+            <column name="MenuTarget" sql-type="nvarchar(50)"/>
+        </property>
+         -->
+        <property name="isParent" type="java.lang.Boolean" >
+            <column name="IsParent" />
+        </property>
+        <!-- 子菜单 -->
+        <!--  
+        <set name="childern" table="SysMenu" inverse="true" cascade="all">
+            <key>
+                <column name="MenuPid" length="36" />
+            </key>
+            <one-to-many class="com.ccu.model.system.SysMenu" />
+        </set>
+        -->       
+    </class>
+</hibernate-mapping>

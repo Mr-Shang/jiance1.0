@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="ErrorInterface"  js="/wabacusdemo/js/demo.js"
+		interceptor="com.ccu.pageInterceptor.ErroeInterfadePageInterceptor">
+		<vpanel id="vpanel1" parenttitle="错误接口信息">
+		<framepanel  id="framepanel1" border="2" title="数字量" margin="10px" bordercolor="#ff0000"  height="50%"> 
+			<report id="showdigitalquantity" title="接口信息" type="editablelist">
+				<interceptor>
+					<imports>
+	  			    	<import>com.wabacus.util.*</import>
+	  						<import>java.util.*</import>
+	  						<import>java.text.SimpleDateFormat</import>
+	  				</imports>
+				    <preaction>
+						<![CDATA[
+							String datea=rrequest.getStringAttribute("txtstarttimea","");
+							String dateb=rrequest.getStringAttribute("txtendtimea","");
+							SimpleDateFormat dfa = new SimpleDateFormat("yyyy-MM-dd 00:00");
+							SimpleDateFormat dfb = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+							if(datea.equals("") && dateb.equals(""))
+							{
+								rrequest.setAttribute("txtstarttimea",dfa.format(new Date()));
+								rrequest.setAttribute("txtendtimea",dfb.format(new Date()));
+							}
+						]]>
+					</preaction>
+				</interceptor>
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UnitId" displaytype="hidden"></col>
+					<col column="UnitName" label="所属单位"></col>
+					<col column="MachineCode" label="设备编码"></col>
+					<col column="ErrorPort" label="端口号"></col>
+					<col column="InterfaceName" label="端口名称"></col>
+					<col column="ShowName" label="状态"></col>
+					<col column="ErrorTime" label="时间"></col>
+				</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[select ErrorInterface.*,UnitInfo.UnitName from ErrorInterface,UnitInfo where ErrorInterface.UnitId=UnitInfo.id and {#condition#}]]>
+						</value>
+						<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+							<value>
+								<![CDATA[(UnitName like %#data#%)]]>
+							</value>
+							<inputbox>
+					        	<typeprompt count="15" width="200">
+							    	<promptcol label="UnitName" matchmode="anywhere"></promptcol>
+							        <datasource>
+								    	<option dataset="@{select UnitName from UnitInfo where {#matchcondition#}}"></option>
+							       	</datasource>
+					        	</typeprompt>
+					     	</inputbox>
+						</condition>
+						<condition name="txtstarttimea" label="起始日期" left="10" right="10" labelposition="left">
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[ErrorTime >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtimea" label="截止日期" left="10" right="10" labelposition="left" >
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[ErrorTime <= '#data#']]></value>
+						</condition>
+					</select>
+				</sql>
+			</report>
+			</framepanel>
+			
+			<framepanel  id="framepanel2" border="2" title="模拟量" margin="10px" bordercolor="#ff0000"  height="50%">
+			<report id="showanalogquantity" title="接口信息" type="editablelist">
+				<interceptor>
+					<imports>
+	  			    	<import>com.wabacus.util.*</import>
+	  						<import>java.util.*</import>
+	  						<import>java.text.SimpleDateFormat</import>
+	  				</imports>
+				    <preaction>
+						<![CDATA[
+							String datec=rrequest.getStringAttribute("txtstarttimeb","");
+							String dated=rrequest.getStringAttribute("txtendtimeb","");
+							SimpleDateFormat dfc = new SimpleDateFormat("yyyy-MM-dd 00:00");
+							SimpleDateFormat dfd = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+							if(datec.equals("") && dated.equals(""))
+							{
+								rrequest.setAttribute("txtstarttimeb",dfc.format(new Date()));
+								rrequest.setAttribute("txtendtimeb",dfd.format(new Date()));
+							}
+						]]>
+					</preaction>
+				</interceptor>
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UnitId" displaytype="hidden"></col>
+					<col column="UnitName" label="所属单位"></col>
+					<col column="MachineCode" label="设备编码"></col>
+					<col column="ErrorPort" label="端口号"></col>
+					<col column="InterfaceName" label="端口名称"></col>
+					<col column="MaxValue" label="最大值"></col>
+					<col column="MinValue" label="最小值"></col>
+					<col column="ErrorValue" label="错误值"></col>
+					<col column="Unit" label="单位"></col>
+					<col column="ErrorTime" label="时间"></col>
+				</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[select ErrorInterface.*,UnitInfo.UnitName from ErrorInterface,UnitInfo where ErrorInterface.UnitId=UnitInfo.id and {#condition#}]]>
+						</value>
+						<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+							<value>
+								<![CDATA[(UnitName like %#data#%)]]>
+							</value>
+							<inputbox>
+					        	<typeprompt count="15" width="200">
+							    	<promptcol label="UnitName" matchmode="anywhere"></promptcol>
+							        <datasource>
+								    	<option dataset="@{select UnitName from UnitInfo where {#matchcondition#}}"></option>
+							       	</datasource>
+					        	</typeprompt>
+					     	</inputbox>
+						</condition>
+						<condition name="txtstarttimeb" label="起始日期" left="10" right="10" labelposition="left">
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[ErrorTime >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtimeb" label="截止日期" left="10" right="10" labelposition="left" >
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[ErrorTime <= '#data#']]></value>
+						</condition>
+					</select>
+				</sql>
+			</report>
+			</framepanel>
+		</vpanel>
+	</page>
+</applications>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="linkVideoInfo"  js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<report id="showLinkVideoInfo" title="监控视频基本信息列表" type="editablelist2" rowselect="multiple-checkbox">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="{sequence:1}" label="序号"  width="80px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所在单位" >
+				</col>
+				<col column="Url" label="视频网络地址" width="330" ></col>
+				
+				<col column="Description" label="描述信息" width="400"></col>
+				<col column="IsUsed" label="是否可用"  width="100px">
+					<inputbox type="radiobox" defaultvalue="0">
+						 <option value="1" label="是"></option> 
+						 <option value="0" label="否"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT VideoInfo.*,UnitInfo.UnitName FROM VideoInfo,UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  source="session{unitId}" hidden="true">
+						<value>
+							 <![CDATA[(UnitInfo.id = '#data#')]]>
+						</value>
+					</condition>
+					<condition name="txtUnitid" label="id"  source="session{unitId}" hidden="true">
+						<value>
+							 <![CDATA[(VideoInfo.UnitId = '#data#')]]>
+						</value>
+					</condition>
+				</select>
+				<insert>
+				<params>
+					<param name="unitId" value="session{unitId}"/>
+				</params>
+		  		 	insert into VideoInfo (id=newid(),@{Url},UnitId=#{unitId},@{IsUsed},@{Description});
+			  	</insert>
+			  	<update>
+			  		update VideoInfo (@{Url},@{IsUsed},@{Description}) where id = @{id};
+			  	</update>
+				<!-- <insert pageurl="report{editforlistpageVideoInfo.report_update_add}" popupparams="{title:'新增监控视频信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageVideoInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑监控视频资料'}"/> -->
+				<!-- <delete>
+					<value>
+						delete from VideoInfo where id = @{id};
+					</value>
+				</delete> -->
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="否";
+					else if(IsUsed.equals("1")) IsUsed="是";
+			  </value>
+			</format>
+
+			<buttons buttonspacing="5">
+				<button name="addVideo" label="添加" position="title">
+					addListReportNewDataRow('linkVideoInfo','showLinkVideoInfo');
+				</button>
+				<button name="saveVideo" position="title" label="保存">
+					saveEditableReportData({pageid:'linkVideoInfo',savingReportIds:[{reportid:'showLinkVideoInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteVideo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete from VideoInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+				<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showLinkVideoInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showLinkVideoInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+</applications>

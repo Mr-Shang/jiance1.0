@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Struts2Diagram version="2.0">
+  <package name="shop.front" location="293,395" size="280,140">
+    <action name="index" location="65,57" size="150,41">
+      <result name="success">
+        <resourceEdge source="success" routing="0" target="index.jsp" />
+      </result>
+    </action>
+  </package>
+  <package name="shop.customer" location="1122,815" size="280,140">
+    <action name="customer_*" location="65,57" size="150,41">
+      <result name="input">
+        <resourceEdge source="input" routing="0" target="customer_reg.jsp" />
+      </result>
+    </action>
+  </package>
+  <webResource name="index.jsp" path="/WEB-INF/pages/index.jsp" location="344,590" size="150,55" />
+  <webResource name="customer_reg.jsp" path="/WEB-INF/pages/user/customer_reg.jsp" location="1134,1010" size="150,55" />
+  <webResource name="product_list.jsp" path="/WEB-INF/pages/product/product_list.jsp" location="389,1220" size="150,55" />
+  <webResource name="product_select.jsp" path="/WEB-INF/pages/product/product_select.jsp" location="31,1010" size="150,55" />
+  <webResource name="product_click_list.jsp" path="/WEB-INF/pages/product/product_click_list.jsp" location="374,800" size="150,55" />
+  <webResource name="product_find_list.jsp" path="/WEB-INF/pages/product/product_find_list.jsp" location="726,1010" size="150,55" />
+  <webResource name="cart_list.jsp" path="/WEB-INF/pages/cart/cart_list.jsp" location="9,30" size="150,55" />
+  <webResource name="order_add.jsp" path="/WEB-INF/pages/order/order_add.jsp" location="520,205" size="150,55" />
+  <webResource name="order_confirm.jsp" path="/WEB-INF/pages/order/order_confirm.jsp" location="1139,415" size="150,55" />
+  <webResource name="order_list.jsp" path="/WEB-INF/pages/order/order_list.jsp" location="838,625" size="150,55" />
+  <webResource name="order_error.jsp" path="/WEB-INF/pages/order/order_error.jsp" location="831,205" size="150,55" />
+</Struts2Diagram>
+

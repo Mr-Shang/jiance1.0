@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="updateuserinfo" js="/webresources/script/validate.js"
+		interceptor="com.ccu.pageInterceptor.updateuserinfoPageInterceptor">
+		<report id="showUserinfo" title="修改基本信息" type="editabledetail"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id"  label="id" displaytype="hidden"/>
+				<col column="Account" label="登录名" clickorderby="true" >
+				<inputbox type="textbox" jsvalidate="isNotEmpty(用户名不能为空)"></inputbox>
+				</col>
+				<col column="password" label="登录密码" clickorderby="true" >
+				<inputbox type="passwordbox" jsvalidate="isNotEmpty(密码不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						select * from UserInfo where {#condition#};
+					</value>
+					<condition name="txtid" source="session{userId}" hidden="true">
+						<value>
+							<![CDATA[(id = '#data#')]]>
+						</value>
+					</condition>
+				</select>
+				<update>
+					update dbo.userinfo{@Account},@{password},UpdateUserId=session{id} where id=@{id};
+				</update>
+			</sql>
+		</report>
+	</page>
+	</applications>

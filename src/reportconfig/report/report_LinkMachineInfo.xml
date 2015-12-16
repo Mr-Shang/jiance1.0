@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="linkMachineInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<report id="report1" title="设备基本信息列表" pagesize="20" type="editablelist2"
+			scrollstyle="image" rowselect="multiple-checkbox">
+			<display >
+				<col column="id" label="id" displaytype="hidden" />
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				
+				<col column="UnitName"  label="所属单位" >
+				</col>
+				<col column="MachineType" label="设备类型" filter="condition{txtMachineType}"   clickorderby="true">
+						<inputbox type="selectbox"  servervalidate="isNotEmpty(${invalid.isnotempty})">
+						      <option label="传输装置" value="传输装置" ></option>
+						      <option label="报警主机" value="报警主机" ></option>
+						      <option label="RTU" value="RTU" ></option>
+					     </inputbox>
+				</col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="MachineCode" label="设备编码" clickorderby="true" filter="condition{txtMachine}">
+					<inputbox jsvalidate="isNotEmpty(#data#设备编码不能为空)"></inputbox>
+				</col>
+				<col column="MachineName" label="设备名称" clickorderby="true" >
+				<inputbox jsvalidate="isNotEmpty(#data#设备编码不能为空)"></inputbox>
+				</col>				
+				<col column="MachineIndex" label="设备序号"  clickorderby="true"/>
+				<col column="Maker" label="制造商" />
+				<col column="MachineVersion" label="版本号" />
+				<col column="IsUsed" label="联接状态" />
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT MachineInfo.*,UnitInfo.UnitName
+  							FROM MachineInfo, UnitInfo where MachineInfo.UnitId = UnitInfo.id and {#condition#} ]]>
+					</value>
+					<condition name="txtUnitId" label="所属单位" source="session{unitId}"  hidden="true">
+						<value>
+							 <![CDATA[(MachineInfo.UnitId = '#data#')]]>
+						</value>
+		
+					</condition>
+					<condition name="txtMachine" label="设备编码" left="20" hidden="true">
+					     <value>
+							<![CDATA[(MachineCode like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" depends="txtUnitName">
+						      <option label="设备编码" value=""></option>
+						      <option label="无" value="" type="false"></option>
+						      <option dataset="@{select MachineCode from MachineInfo where MachineType='用户信息传输装置' and UnitId like (select id from UnitInfo where UnitName like '%#txtUnitName#%') }" label="MachineCode" value="MachineCode"></option>
+					     </inputbox>
+				    </condition>
+				    <condition name="txtMachineType" label="设备类型" left="20" hidden="true">
+					     <value>
+							<![CDATA[(MachineType like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" >
+						      <option label="设备类型" value=""></option>
+						      <option label="传输装置" value="传输装置" ></option>
+						      <option label="报警主机" value="报警主机" ></option>
+						      <option label="RTU" value="RTU" ></option>
+					     </inputbox>
+				    </condition>
+					<condition name="txtMachineCode" label="设备编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(MachineCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="MachineCode" title="设备编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="MachineName" title="设备名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select MachineCode,MachineName from MachineInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtMachineName" label="设备名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(MachineName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="MachineName" title="设备名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select MachineName from	MachineInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				 
+  			<insert>
+  				<params>
+					<param name="user" value="session{userId}"/>
+					<param name="unitId" value="session{unitId}"/>
+				</params>
+					insert into MachineInfo
+					(id=NEWID(),@{MachineCode},@{MachineName},
+					@{MachineType},@{MachineIndex},@{Maker},@{MachineVersion},UnitId=#{unitId},IsUsed=1)
+				</insert>
+ 				<update>
+						update MachineInfo(@{MachineType},@{MachineName},@{MachineIndex},@{Maker},@{MachineVersion}) where id = @{id};
+				</update> 
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="脱机";
+					else if(IsUsed.equals("1")) IsUsed="联机";
+			  </value>
+			</format>
+			<buttons buttonspacing="5">
+				<button name="addMachineInfo" label="添加" position="title">
+					addListReportNewDataRow('linkMachineInfo','report1');
+				</button>
+				<button name="saveMachineInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'linkMachineInfo',savingReportIds:[{reportid:'report1',updatetype:'save'}]});
+				</button>
+				<button name="deleteMachineInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete dbo.MachineInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+				<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("report1",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("report1",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+
+</applications>

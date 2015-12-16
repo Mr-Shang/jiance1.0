@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="videoInfo"  js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.videoInfoPageInterceptor">
+		<report id="showVideoInfo" title="监控视频基本信息列表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="{sequence:1}" label="序号"  width="80px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所在单位"  updatecol="@{UnitId}">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(#data#所属单位不能为空)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				<col column="Url" label="视频网络地址" width="330"></col>
+				
+				<col column="Description" label="描述信息" width="400"></col>
+				<col column="IsUsed" label="是否可用"  width="100px">
+					<inputbox type="radiobox" defaultvalue="0">
+						 <option value="1" label="是"></option> 
+						 <option value="0" label="否"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT VideoInfo.*,UnitInfo.UnitName FROM VideoInfo,UnitInfo where UnitInfo.id = VideoInfo.UnitId and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"   labelposition="left"  left="10" right="10">
+						<value>
+							 <![CDATA[(UnitInfo.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox" >
+						      <option label="全部" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+				</select>
+				<insert>
+		  		 	insert into VideoInfo (id=newid(),@{Url},@{UnitId},@{IsUsed},@{Description});
+			  	</insert>
+			  	<update>
+			  		update VideoInfo (@{Url},@{UnitId},@{IsUsed},@{Description}) where id = @{id};
+			  	</update>
+				<!-- <insert pageurl="report{editforlistpageVideoInfo.report_update_add}" popupparams="{title:'新增监控视频信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageVideoInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑监控视频资料'}"/> -->
+				<!-- <delete>
+					<value>
+						delete from VideoInfo where id = @{id};
+					</value>
+				</delete> -->
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="否";
+					else if(IsUsed.equals("1")) IsUsed="是";
+			  </value>
+			</format>
+
+			<buttons buttonspacing="5">
+				<button name="addVideo" label="添加" position="title">
+					addListReportNewDataRow('videoInfo','showVideoInfo');
+				</button>
+				<button name="saveVideo" position="title" label="保存">
+					saveEditableReportData({pageid:'videoInfo',savingReportIds:[{reportid:'showVideoInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteVideo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete from VideoInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+				<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showVideoInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showVideoInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+	<page id="editforlistpageVideoInfo" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="Url" label="视频网络地址" clickorderby="true">
+					<inputbox jsvalidate="isNotEmpty(#data#视频地址不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所在单位" clickorderby="true">
+					<inputbox type="selectbox" servervalidate="isNotEmpty(#data#请选择所属单位)">
+							  <option label="请选择" value=""></option>
+							  <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+				<col column="IsUsed" label="是否可用" clickorderby="true" br="true">
+					 <inputbox type="radiobox" servervalidate="isNotEmpty(#请选择是否可用)">
+						    <option value="0" label="否"></option> 
+						    <option value="1" label="是"></option>
+					 </inputbox>
+				</col>
+				<col column="Description" label="描述信息" clickorderby="true" valuestyleproperty="colspan='5'">
+					<inputbox type="textareabox" styleproperty="rows='5'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM VideoInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into VideoInfo (id=newid(),@{Url},@{UnitId},@{IsUsed},@{Description});
+			  	</insert>
+			  	<update>
+			  		update VideoInfo (@{Url},@{UnitId},@{IsUsed},@{Description}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page>
+</applications>

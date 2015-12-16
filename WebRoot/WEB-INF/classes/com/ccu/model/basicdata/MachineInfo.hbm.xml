@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.basicdata.MachineInfo" table="MachineInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <many-to-one name="unitInfo" class="com.ccu.model.basicdata.UnitInfo" fetch="join" cascade="save-update">
+            <column name="UnitId" length="36" not-null="true" />
+        </many-to-one>
+        <property name="machineCode">
+            <column name="MachineCode" not-null="true" sql-type="nvarchar(50)" />
+        </property>
+        <property name="machineName">
+            <column name="MachineName" not-null="true" sql-type="nvarchar(50)" />
+        </property>
+        <property name="machineType">
+            <column name="MachineType"  sql-type="nvarchar(50)" />
+        </property>
+        <property name="machineIndex" type="java.lang.Integer">
+            <column name="MachineIndex" not-null="true" />
+        </property>
+        <property name="maker">
+            <column name="Maker" sql-type="nvarchar(50)" />
+        </property>
+        <property name="machineVersion">
+            <column name="MachineVersion" sql-type="nvarchar(50)" />
+        </property>
+        <property name="isUsed" type="java.lang.Boolean">
+            <column name="IsUsed" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="role" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.rolePageInterceptor">
+		<report id="showRole" title="角色基本信息列表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="RoleName" label="角色名称" width="120px"></col>
+				<col column="RoleDescription" label="角色描述"></col>
+				<col column="CreateUserId" displaytype="hidden"></col>
+				<col column="Account" label="创建用户" width="120px"  updatecol="@{CreateUserId}">
+				</col>
+				<col column="RoleCreateTime" label="创建时间"  datatype="timestamp" width="150px">
+					<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT Role.*,UserInfo.Account FROM Role,UserInfo where UserInfo.id = Role.CreateUserId and {#condition#} ]]>
+					</value>
+					<condition name="txtRoleName" label="角色名称" left="10" labelposition="left"> 
+						<value>
+							<![CDATA[(Role.RoleName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="RoleName" title="角色名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select RoleName from	Role where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtAccount" label="创建用户" left="10" labelposition="left" right="10"> 
+						<value>
+							<![CDATA[(UserInfo.Account like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="Account" title="账户名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select Account from	UserInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+<!-- 				<insert pageurl="report{editforlistpageRole.report_update_add}" popupparams="{title:'新增角色信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageRole.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑角色资料'}"/> -->
+<!-- 				<delete>
+					<value>
+						delete from Role where id = @{id};
+					</value>
+				</delete> -->
+				<insert>
+					<params>
+						<param name="createUserId" value="session{userId}"/>
+						<param name="currentdate" value="now{}" datatype="timestamp"></param>
+					</params>
+		  		 	insert into Role (id=newid(),@{RoleName},@{RoleDescription},CreateUserId=#{createUserId},RoleCreateTime=#{currentdate});
+			  	</insert>
+			  	<update>
+			  		update Role (@{RoleName},@{RoleDescription}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons buttonspacing="5">
+				<button name="addRole" label="添加" position="title">
+					addListReportNewDataRow('role','showRole');
+				</button>
+				<button name="saveRole" position="title" label="保存">
+					saveEditableReportData({pageid:'role',savingReportIds:[{reportid:'showRole',updatetype:'save'}]});
+				</button>
+				<button name="deleteRole" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete from Role where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+				<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showRole",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showRole",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+	<page id="editforlistpageRole" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="RoleName" label="角色名称" clickorderby="true">
+					<inputbox jsvalidate="isNotEmpty(#data#角色名不能为空)"></inputbox>
+				</col>
+				<col column="RoleDescription" label="角色描述" clickorderby="true" br="true"></col>
+				<col column="CreateUserId" label="创建用户" displaytype="hidden"></col>
+				<col column="RoleCreateTime" label="创建时间" clickorderby="true">
+					<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" ></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM Role where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+					<params>
+						<param name="createUserId" value="session{userId}"/>
+					</params>
+		  		 	insert into Role (id=newid(),@{RoleName},@{RoleDescription},CreateUserId=#{createUserId},@{RoleCreateTime});
+			  	</insert>
+			  	<update>
+			  		update Role (@{RoleName},@{RoleDescription},@{CreateUserId},@{RoleCreateTime}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page>
+</applications>

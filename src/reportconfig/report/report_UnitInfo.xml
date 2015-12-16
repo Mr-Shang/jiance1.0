@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="unitInfo"  js="/wabacusdemo/js/demo.js" interceptor="com.ccu.pageInterceptor.unitInfoPageInterceptor">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px"  border="0">
+		<report id="showUnitInfo_lianwang" parenttitle="联网单位"  title="单位基本信息列表" type="editablelist" rowselect="checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitType" label="单位类型"  displaytype="hidden"></col>
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitCode" label="单位编码" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="UnitAddr" label="单位地址" width="300px"></col>
+				<col column="NodeNum" label="总结点数"  displaytype="hidden"></col>
+				<col column="IsRemove" label="是否测试" ></col>
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='联网单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitCode" label="单位编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(UnitCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="UnitCode" title="单位编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="UnitName" title="单位名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select UnitCode,UnitName from UnitInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<update pageurl="report{unitInfo_lianwang.report_add_update}" urlparams="txtid=@{id}"  popupparams="{title:'编辑单位资料',width:920,height:300}"/>
+			</sql>
+			<format>
+				<value>
+					IsRemove=IsRemove==null?"":IsRemove.trim();
+					if(IsRemove.equals("0")) IsRemove="否";
+					else if(IsRemove.equals("1")) IsRemove="是";
+			  </value>
+			</format>
+			<buttons buttonspacing="5">
+				<button name="addUnitInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addUnitInfo_lianwang',{width:920,height:300,title:'添加单位'});
+				</button>
+				<button name="deleteUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.UnitInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+		<report id="showUnitInfo_jiankong" parenttitle="监控单位"  title="单位基本信息列表" type="editablelist" rowselect="checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitType" label="单位类型"  displaytype="hidden"></col>
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitCode" label="单位编码" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="UnitAddr" label="单位地址" width="300px"></col>
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='监控单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitCode" label="单位编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(UnitCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="UnitCode" title="单位编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="UnitName" title="单位名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select UnitCode,UnitName from UnitInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<update pageurl="report{unitInfo_jiankong.report_add_update}" urlparams="txtid=@{id}"  popupparams="{title:'编辑单位资料',width:900,height:380}"/>
+			</sql>
+
+			<buttons buttonspacing="5">
+				<button name="addUnitInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addUnitInfo_jiankong',{width:900,height:380,title:'添加单位'});
+				</button>
+				<button name="deleteUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.UnitInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+		<report id="showUnitInfo_jiejing" parenttitle="接警单位"  title="单位基本信息列表" type="editablelist" rowselect="checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitType" label="单位类型"  displaytype="hidden"></col>
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitCode" label="单位编码" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="UnitAddr" label="单位地址" width="300px"></col>
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='接警单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitCode" label="单位编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(UnitCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="UnitCode" title="单位编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="UnitName" title="单位名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select UnitCode,UnitName from UnitInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<update pageurl="report{unitInfo_jiejing.report_add_update}" urlparams="txtid=@{id}" popupparams="{title:'编辑单位资料' ,width:900,height:380}"/>
+			</sql>
+	
+			<buttons buttonspacing="5">
+				<button name="addUnitInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addUnitInfo_jiejing',{width:900,height:380,title:'添加单位'});
+				</button>
+				<button name="deleteUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.UnitInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+		<report id="showUnitInfo_weibao" parenttitle="维保单位"  title="单位基本信息列表" type="editablelist" rowselect="checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitType" label="单位类型"  displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitCode" label="单位编码" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="UnitAddr" label="单位地址" width="300px"></col>
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='维保单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitCode" label="单位编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(UnitCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="UnitCode" title="单位编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="UnitName" title="单位名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select UnitCode,UnitName from UnitInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<update pageurl="report{unitInfo_weibao.report_add_update}" urlparams="txtid=@{id}" popupparams="{title:'编辑单位资料' ,width:900,height:380}"/>
+			</sql>
+
+			<buttons buttonspacing="5">
+				<button name="addUnitInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addUnitInfo_weibao',{width:900,height:380,title:'添加单位'});
+				</button>
+				<button name="deleteUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.UnitInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+		<report id="showUnitInfo_xiaojian" parenttitle="消检单位"  title="单位基本信息列表" type="editablelist" rowselect="checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitType" label="单位类型"  displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitCode" label="单位编码" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="UnitAddr" label="单位地址" width="300px"></col>
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='消检单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitCode" label="单位编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(UnitCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="UnitCode" title="单位编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="UnitName" title="单位名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select UnitCode,UnitName from UnitInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<update pageurl="report{unitInfo_xiaojian.report_add_update}" urlparams="txtid=@{id}" popupparams="{title:'编辑单位资料' ,width:900,height:380}"/>
+			</sql>
+
+			<buttons buttonspacing="5">
+				<button name="addUnitInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addUnitInfo_xiaojian',{width:900,height:380,title:'添加单位'});
+				</button>
+				<button name="deleteUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.UnitInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+		</tabpanel>
+	</page>
+	
+	<page id="unitInfo_lianwang" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="联网单位" type="form">
+			<display labeltdwidth="100"  valuetdwidth="120" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>
+				<col column="UnitCode" label="单位编码" ></col>				
+				<col column="NodeNum" label="总结点数" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#总结点数不能为空)"  styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="Coordinate" label="单位坐标" valuestyleproperty="colspan='2'">
+					<inputbox jsvalidate="isNotEmpty(#data#单位坐标不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='4'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" styleproperty="style='width:98%'"></inputbox>
+				</col>
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="Organization" label="组织机构">
+					<inputbox jsvalidate="isNotEmpty(#data#组织机构不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="EnterpriseType" label="企业类型" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#企业类型不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsName" label="负责人姓名">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsTel" label="负责人联系电话">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsMail" label="负责人联系邮箱" valuestyleproperty="colspan='2'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人联系邮箱不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="JoinTime" label="入网时间" datatype="date{yyyy-MM-dd}">
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(#data#入网时间不能为空);isDate(#data#格式不对，必须为yyyy-MM-dd格式)"></inputbox>
+				</col>
+				<col column="UpdateTime" label="更新日期" datatype="date{yyyy-MM-dd}">
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(#data#更新日期不能为空);isDate(#data#格式不对，必须为yyyy-MM-dd格式)"></inputbox>
+				</col>
+				<col column="LegalPersonName" label="法人姓名">
+					<inputbox jsvalidate="isNotEmpty(#data#法人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="LegalPersonTel" label="法人联系电话" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#法人联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="MonitoringUnitId" label="所属监控单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(所属监控单位必须选择)" styleproperty="style='width:98%'">
+								<option label="==请选择==" value="" ></option>
+								<option dataset="@{select id,UnitName from UnitInfo where UnitType='监控单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="CalledUnitId" label="接警单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(接警单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='接警单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="RepairUnitId" label="维保单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(维保单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='维保单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="EliminationUnitId" label="消检单位" br="true" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(消检单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='消检单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<!-- <insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},@{Coordinate},UnitType='联网单位',
+		  		 	@{UnitAddr},@{NodeNum},@{HeadName},@{HeadTel},@{Organization},@{EnterpriseType},IsRemove=0,
+		  		 	@{ContactsName},@{ContactsTel},@{ContactsMail},@{JoinTime},@{UpdateTime},@{LegalPersonName},@{LegalPersonTel},
+		  		 	@{MonitoringUnitId},@{CalledUnitId},@{RepairUnitId},@{EliminationUnitId});
+			  	</insert> -->
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{NodeNum},@{HeadName},@{HeadTel},@{MonitoringUnitId},@{CalledUnitId},@{RepairUnitId},@{EliminationUnitId}),
+			  		@{Coordinate},@{Organization},@{EnterpriseType},@{ContactsName},@{ContactsTel},@{ContactsMail},@{JoinTime},@{UpdateTime},@{LegalPersonName},@{LegalPersonTel}
+			  		where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'unitInfo_lianwang',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="unitInfo_jiankong"  js="/webresources/script/validate.js">
+		<report id="report_add_update" title="监控单位" type="form">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>
+				<col column="UnitCode" label="单位编码"  br="true"></col>								
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" styleproperty="style='width:98%'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='监控单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'unitInfo_jiankong',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="unitInfo_jiejing" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="接警单位" type="form">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>
+				<col column="UnitCode" label="单位编码"  br="true"></col>								
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)"  styleproperty="style='width:95'%"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" styleproperty="style='width:98%'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+		
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='接警单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="unitInfo_weibao" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="维保单位" type="form">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>
+				<col column="UnitCode" label="单位编码"  br="true"></col>								
+				<col column="HeadName" label="联系人姓名" >
+						<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" 	styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" 	styleproperty="style='width:98%'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+			
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='维保单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_weibao',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	<page id="unitInfo_xiaojian" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="消检单位" type="form">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>
+				<col column="UnitCode" label="单位编码"  br="true"></col>								
+				<col column="HeadName" label="联系人姓名" >
+						<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" 	styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" 	styleproperty="style='width:98%'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+			
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='消检单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_xiaojian',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	<page id="addUnitInfo_lianwang"  js="/webresources/script/validate.js">
+		<report id="report_add_update" title="联网单位" type="form" servervalidateclass="com.ccu.jiaoyan.TestServervalidateUnit">
+			<display labeltdwidth="100"  valuetdwidth="120" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" >
+					<inputbox servervalidate="isNotEmpty(单位名称不能为空);isUniqueUnitName(此单位名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="UnitCode" label="单位编码" >
+					<inputbox servervalidate="isNotEmpty(单位编码不能为空);isUniqueUnitCode(此单位编码#data#已经存在)" servervalidatetype="both"/>
+				</col>				
+				<col column="NodeNum" label="总结点数" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#总结点数不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="Coordinate" label="单位坐标" valuestyleproperty="colspan='2'">
+					<inputbox jsvalidate="isNotEmpty(#data#单位坐标不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='4'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" styleproperty="style='width:98%'"></inputbox>
+				</col>
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="Organization" label="组织机构">
+					<inputbox jsvalidate="isNotEmpty(#data#组织机构不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="EnterpriseType" label="企业类型" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#企业类型不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsName" label="负责人姓名">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsTel" label="负责人联系电话">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="ContactsMail" label="负责人联系邮箱" valuestyleproperty="colspan='2'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#负责人联系邮箱不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="JoinTime" label="入网时间" datatype="date{yyyy-MM-dd}">
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(#data#入网时间不能为空);isDate(#data#格式不对，必须为yyyy-MM-dd格式)"></inputbox>
+				</col>
+				<col column="UpdateTime" label="更新日期" datatype="date{yyyy-MM-dd}">
+					<inputbox type="datepicker" jsvalidate="isNotEmpty(#data#更新日期不能为空);isDate(#data#格式不对，必须为yyyy-MM-dd格式)"></inputbox>
+				</col>
+				<col column="LegalPersonName" label="法人姓名">
+					<inputbox jsvalidate="isNotEmpty(#data#法人姓名不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="LegalPersonTel" label="法人联系电话" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#法人联系电话不能为空)" styleproperty="style='width:95%'"></inputbox>
+				</col>
+				<col column="MonitoringUnitId" label="所属监控单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(所属监控单位必须选择)" styleproperty="style='width:98%'">
+								<option label="==请选择==" value="" ></option>
+								<option dataset="@{select id,UnitName from UnitInfo where UnitType='监控单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="CalledUnitId" label="接警单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(接警单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='接警单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="RepairUnitId" label="维保单位" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(维保单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='维保单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+				<col column="EliminationUnitId" label="消检单位" br="true" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(消检单位必须选择)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value="" ></option>
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType='消检单位'}" label="UnitName" value="id"></option>
+					</inputbox>
+				</col>
+			</display>
+			<sql>
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},@{Coordinate},UnitType='联网单位',
+		  		 	@{UnitAddr},@{NodeNum},@{HeadName},@{HeadTel},@{Organization},@{EnterpriseType},IsRemove=0,
+		  		 	@{ContactsName},@{ContactsTel},@{ContactsMail},@{JoinTime},@{UpdateTime},@{LegalPersonName},@{LegalPersonTel},
+		  		 	@{MonitoringUnitId},@{CalledUnitId},@{RepairUnitId},@{EliminationUnitId});
+			  	</insert>
+			  	<!-- <update>
+			  		update UnitInfo (@{UnitAddr},@{NodeNum},@{HeadName},@{HeadTel},@{MonitoringUnitId},@{CalledUnitId},@{RepairUnitId}),@{EliminationUnitId} where id = @{id};
+			  	</update> -->
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_lianwang',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="addUnitInfo_jiankong"  js="/webresources/script/validate.js">
+		<report id="report_add_update" title="监控单位" type="form" servervalidateclass="com.ccu.jiaoyan.TestServervalidateUnit">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" >
+					<inputbox servervalidate="isNotEmpty(单位名称不能为空);isUniqueUnitName(此单位名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="UnitCode" label="单位编码"  br="true">
+					<inputbox servervalidate="isNotEmpty(单位编码不能为空);isUniqueUnitCode(此单位编码#data#已经存在)" servervalidatetype="both"/>
+				</col>								
+				
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" ></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" ></inputbox>
+				</col>
+			</display>
+			<sql>
+	
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='监控单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_jiankong',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="addUnitInfo_jiejing"   js="/webresources/script/validate.js">
+		<report id="report_add_update" title="接警单位" type="form" servervalidateclass="com.ccu.jiaoyan.TestServervalidateUnit">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" >
+					<inputbox servervalidate="isNotEmpty(单位名称不能为空);isUniqueUnitName(此单位名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="UnitCode" label="单位编码"  br="true">
+					<inputbox servervalidate="isNotEmpty(单位编码不能为空);isUniqueUnitCode(此单位编码#data#已经存在)" servervalidatetype="both"/>
+				</col>								
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" ></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" ></inputbox>
+				</col>
+			</display>
+			<sql>
+				
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='接警单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_jiejing',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+		</page>
+		<page id="addUnitInfo_weibao" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="维保单位" type="form" servervalidateclass="com.ccu.jiaoyan.TestServervalidateUnit">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" >
+					<inputbox servervalidate="isNotEmpty(单位名称不能为空);isUniqueUnitName(此单位名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="UnitCode" label="单位编码"  br="true">
+					<inputbox servervalidate="isNotEmpty(单位编码不能为空);isUniqueUnitCode(此单位编码#data#已经存在)" servervalidatetype="both"/>
+				</col>								
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)"></inputbox>
+				</col>
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" ></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" ></inputbox>
+				</col>
+			</display>
+			<sql>
+			
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='维保单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_weibao',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	<page id="addUnitInfo_xiaojian" js="/webresources/script/validate.js">
+		<report id="report_add_update" title="消检单位" type="form" servervalidateclass="com.ccu.jiaoyan.TestServervalidateUnit">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" >
+					<inputbox servervalidate="isNotEmpty(单位名称不能为空);isUniqueUnitName(此单位名称#data#已经存在)" servervalidatetype="both"/>
+				</col>
+				<col column="UnitCode" label="单位编码"  br="true">
+					<inputbox servervalidate="isNotEmpty(单位编码不能为空);isUniqueUnitCode(此单位编码#data#已经存在)" servervalidatetype="both"/>
+				</col>								
+				
+				<col column="HeadName" label="联系人姓名" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系人不能为空)"></inputbox>
+				</col>
+				
+				<col column="HeadTel" label="联系电话" br="true" >
+					<inputbox jsvalidate="isNotEmpty(#data#联系电话不能为空)" ></inputbox>
+				</col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#单位地址不能为空)" ></inputbox>
+				</col>
+			</display>
+			<sql>
+			
+				<insert>
+		  		 	insert into UnitInfo (id=newid(),@{UnitName},@{UnitCode},UnitType='消检单位',@{UnitAddr},@{HeadName},@{HeadTel},IsRemove=0);
+			  	</insert>
+			  	<update>
+			  		update UnitInfo (@{UnitAddr},@{HeadName},@{HeadTel}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveUnitInfo_lianwang" position="title" label="保存">
+					saveEditableReportData({pageid:'addUnitInfo_xiaojian',savingReportIds:[{reportid:'report_add_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{add}","display","false");
+	  	 			rrequest.authorize("report_add_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+</applications>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC 
+	"-//Hibernate/Hibernate Configuration DTD 3.0//EN" 
+	"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd" >
+<hibernate-configuration>
+	<session-factory>
+		<!-- 数据库方言 -->
+		<property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+		<!-- 数据库驱动 -->
+		<property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+		<!-- 数据库连接信息 -->
+		<property name="hibernate.connection.url">jdbc:sqlserver://122.141.94.91:1433;databaseName=jiance</property>
+		<property name="hibernate.connection.username">sa</property>
+		<property name="hibernate.connection.password">admin12345</property>
+		<!-- 打印SQL语句 -->
+		<property name="hibernate.show_sql">false</property>
+		<!-- 不格式化SQL语句 -->
+		<property name="hibernate.format_sql">true</property>
+		<!--  -->
+		<property name="hibernate.default_schema">dbo</property> 
+		<!-- 为Session指定一个自定义策略 -->
+		<property name="hibernate.current_session_context_class">thread</property>
+		<!-- C3P0 JDBC连接池 -->
+		<property name="hibernate.c3p0.max_size">20</property>
+		<property name="hibernate.c3p0.min_size">5</property>
+		<property name="hibernate.c3p0.timeout">120</property>
+		<property name="hibernate.c3p0.max_statements">100</property>
+		<property name="hibernate.c3p0.idle_test_period">120</property>
+		<property name="hibernate.c3p0.acquire_increment">2</property>
+		<property name="hibernate.c3p0.validate">true</property>	
+		<!-- 根据需要自动创建数据表 -->
+		<!--  <property name="hbm2ddl.auto">update</property>	-->
+		<!-- 映射文件 -->
+        <mapping resource="com/ccu/model/business/CheckInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/UnitInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/auxiliaryinfo/ControlRoomInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/business/CrtInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/auxiliaryinfo/EnterUnitInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/EventInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/EventType.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/InterfaceInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/LogicGraphic.hbm.xml"/>
+        <mapping resource="com/ccu/model/system/LogInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/MachineInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/RecordInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/system/Role.hbm.xml"/>
+        <mapping resource="com/ccu/model/system/SysMenu.hbm.xml"/>
+        <mapping resource="com/ccu/model/system/UserInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/business/VideoInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/auxiliaryinfo/WatchPersonInfo.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/Evaluate.hbm.xml"/>
+        <mapping resource="com/ccu/model/basicdata/EventTest.hbm.xml"/>
+	</session-factory>
+</hibernate-configuration>

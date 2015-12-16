@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="interfaceInfo"  js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.interfaceInfoPageInterceptor">
+		<report id="showinterfaceInfo" title="接口基本信息列表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="OrderIndex" label="排序序号" ></col>
+				<col column="{col-rowselect}" label="全选"  width="60px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName"  label="所属单位" filter="condition{txtUnitName}" updatecol="@{UnitId}" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(所属单位必须选择)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				<col column="MachineCode" label="RTU编号"   >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(RTU编号必须选择)" depends="UnitId">
+						<option dataset="@{select MachineCode from MachineInfo where MachineType ='RTU' and UnitId like '%#UnitId#%'}" value= "MachineCode" label="MachineCode"></option>
+					</inputbox>				
+				</col>				
+				<col column="InterfaceName" label="接口名称" >
+					<inputbox jsvalidate="isNotEmpty(#data#接口名称不能为空)"></inputbox>
+				</col>
+				<col column="InterfaceType" label="接口类型" clickorderby="true">
+						<inputbox type="selectbox"  jsvalidate="isNotEmpty(#data#接口类型不能为空)">
+						      <option label="模拟量" value="模拟量" ></option>
+						      <option label="数字量" value="数字量" ></option>
+					     </inputbox>
+				</col>
+				<col column="Port" label="端口号" clickorderby="true" width="60px">
+					<inputbox jsvalidate="isNotEmpty(#data#端口号不能为空)"></inputbox>				
+				</col>
+				<col column="SingnalName" label="信号名称" >
+						<inputbox type="selectbox"  jsvalidate="isNotEmpty(信号名称必须选择)">
+						      <option label="电流型" value="电流型" ></option>
+						      <option label="电压型" value="电压型" ></option>
+						      <option label="无" value="无" ></option>
+					     </inputbox>
+				</col>
+				<col column="MaxValue" label="上限"  width="60px">
+					<inputbox jsvalidate="isNotEmpty(#data#上限不能为空)"></inputbox>
+				</col>
+				<col column="MinValue" label="下限"  width="60px">
+					<inputbox jsvalidate="isNotEmpty(#data#下限不能为空)"></inputbox>
+				</col>
+				<col column="ReferenceValue" label="模拟量参考值"  width="100px">
+					<inputbox jsvalidate="isNotEmpty(#data#模拟量参考值不能为空)"></inputbox>
+				</col>	
+				<col column="ExpressionKey" label="公示关键字" >
+					<inputbox jsvalidate="isNotEmpty(#data#公示关键字不能为空)"></inputbox>
+				</col>			
+				<col column="NormalValue" label="正常点平"  width="70px" >
+					<inputbox jsvalidate="isNotEmpty(#data#正常点平不能为空)"></inputbox>
+				</col>
+				<col column="NormalShowName" label="正常显示名" >
+					<inputbox jsvalidate="isNotEmpty(#data#正常显示名不能为空)"></inputbox>
+				</col>
+				<col column="ExceptShowName" label="异常显示名">
+					<inputbox jsvalidate="isNotEmpty(#data#异常显示名不能为空)"></inputbox>
+				</col>
+				<col column="Unit" label="度量单位" width="60px" >
+					<inputbox jsvalidate="isNotEmpty(#data#度量单位不能为空)"></inputbox>
+				</col>
+				<col column="IsUsed" label="是否可用"  width="80px"  >
+						<inputbox type="selectbox"  jsvalidate="isNotEmpty(是否可用必须选择)">
+						      <option label="是" value="1" ></option>
+						      <option label="否" value="0" ></option>
+					     </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT i.*,u.UnitName FROM InterfaceInfo i,UnitInfo u where u.id=UnitId  and {#condition#}  order  by i.UnitName asc,InterfaceType asc,OrderIndex desc]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(u.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType = '联网单位'" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition> 
+					<condition name="txtPort" label="端口号" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(Port like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="Port" title="端口号" matchmode="anywhere"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select Port from InterfaceInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtIntefaceName" label="接口名称" left="10" labelposition="left"> 
+						<value>
+							<![CDATA[(InterfaceName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="InterfaceName" title="接口名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select InterfaceName from	InterfaceInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtInterfaceType" label="接口类型" left="10" right="10" labelposition="left">
+					     <value>
+							<![CDATA[(InterfaceType like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" >
+						      <option label="全部" value=""></option>
+						      <option label="模拟量" value="模拟量" ></option>
+						      <option label="数字量" value="数字量" ></option>						
+					     </inputbox>
+				    </condition>
+				</select>
+				<insert>
+					 insert into InterfaceInfo
+					  (id=NEWID(),@{MachineCode},@{InterfaceName},@{InterfaceType},@{Port},@{SingnalName},
+					  @{MaxValue},@{MinValue},@{ReferenceValue},@{ExpressionKey},@{OrderIndex},@{NormalValue},
+					  @{NormalShowName},@{ExceptShowName},@{Unit},@{IsUsed},@{UnitId})
+				</insert>
+				<update>
+					update  InterfaceInfo
+					 (@{MachineCode},@{InterfaceName},@{InterfaceType},@{Port},@{SingnalName},
+					 @{MaxValue},@{MinValue},@{ReferenceValue},@{ExpressionKey},@{OrderIndex},@{NormalValue},
+					 @{NormalShowName},@{ExceptShowName},@{Unit},@{IsUsed},@{UnitId})  where id = @{id};
+				</update>
+				<!-- <insert pageurl="report{editforlistpageInterfaceInfo.report_update_add}" popupparams="{title:'新增接口信息'}" pageinitsize="max"/> -->
+				<!-- <update pageurl="report{editforlistpageInterfaceInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑接口资料'}"/> -->
+				
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="否";
+					else if(IsUsed.equals("1")) IsUsed="是";
+			  </value>
+			</format>
+			<buttons buttonspacing="5">
+				<button name="addInterfaceInfo" label="添加" position="title">
+					addListReportNewDataRow('interfaceInfo','showinterfaceInfo');
+				</button>
+				<button name="saveInterfaceInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'interfaceInfo',savingReportIds:[{reportid:'showinterfaceInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteInterfaceInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete dbo.InterfaceInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showinterfaceInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showinterfaceInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+			<footer>
+				<![CDATA[
+					<font color='red'>说明：</font><br/>
+					<font color='blue'>如果没有所需列值，请填写"无"</font><br/>
+				]]>
+			</footer>
+		</report>
+	</page>
+	
+	<!-- <page id="editforlistpageInterfaceInfo" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="MachineCode" label="设备编码" clickorderby="true"></col>
+				<col column="InterfaceName" label="接口名称" clickorderby="true" br="true"></col>
+				<col column="InterfaceType" label="接口类型" clickorderby="true"></col>
+				<col column="Port" label="端口" clickorderby="true" br="true"></col>
+				<col column="SingnalName" label="信号名称" clickorderby="true"></col>
+				<col column="MaxValue" label="上限" clickorderby="true" br="true"></col>
+				<col column="MinValue" label="下限" clickorderby="true"></col>
+				<col column="ReferenceValue" label="模拟量参考值" clickorderby="true" br="true"></col>
+				<col column="IsUsed" label="是否可用" clickorderby="true">
+					<inputbox type="selectbox" servervalidate="isNotEmpty(#data#请选择是否可用)">
+						<option label="请选择" value=""></option>
+						<option label="是" value="1"></option>
+						<option label="否" value="0"></option>
+					</inputbox>
+				</col>
+				<col column="ExpressionKey" label="公示关键字" clickorderby="true" br="true"></col>
+				<col column="OrderIndex" label="排序序号" clickorderby="true"></col>
+				<col column="NormalValue" label="正常点平" clickorderby="true" br="true"></col>
+				<col column="NormalShowName" label="正常状态显示名" clickorderby="true"></col>
+				<col column="ExceptShowName" label="异常状态显示名" clickorderby="true" br="true"></col>
+				<col column="Unit" label="度量单位" clickorderby="true"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM InterfaceInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+				<params>
+					<param name="createUser" value="session{userId}"/>
+				</params>
+		  		 	insert into InterfaceInfo (id=newid(),@{MachineCode},@{InterfaceName},@{InterfaceType},@{Port},@{SingnalName},@{MaxValue},@{MinValue},@{ReferenceValue},@{IsUsed},@{ExpressionKey},@{OrderIndex},@{NormalValue},@{NormalShowName},@{ExceptShowName},@{Unit});
+			  	</insert>
+		  	<update>
+			  		update InterfaceInfo (@{MachineCode},@{InterfaceName},@{InterfaceType},@{Port},@{SingnalName},@{MaxValue},@{MinValue},@{ReferenceValue},@{IsUsed},@{ExpressionKey},@{OrderIndex},@{NormalValue},@{NormalShowName},@{ExceptShowName},@{Unit}) where id = @{id};
+			  	</update> 
+			</sql>
+		</report>
+	</page> -->
+</applications>

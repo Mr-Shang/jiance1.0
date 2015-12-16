@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Struts2Diagram version="2.0">
+  <package name="shop.admin" location="688,550" size="455,210">
+    <action name="admin_*" location="205,71" size="150,83">
+      <result name="top">
+        <resourceEdge source="top" routing="0" target="top.jsp" />
+      </result>
+      <result name="left">
+        <resourceEdge source="left" routing="0" target="left.jsp" />
+      </result>
+      <result name="right">
+        <resourceEdge source="right" routing="0" target="right.jsp" />
+      </result>
+    </action>
+  </package>
+  <package name="shop.admin.user" location="10,1425" size="180,70">
+    <action name="user_*" location="15,23" size="150,40" />
+  </package>
+  <package name="shop.admin.category" location="828,165" size="280,210">
+    <action name="category_*" location="65,71" size="150,83">
+      <result name="list">
+        <resourceEdge source="list" routing="0" target="category_list.jsp" />
+      </result>
+      <result name="input">
+        <resourceEdge source="input" routing="0" target="category_add.jsp" />
+      </result>
+      <result name="edit">
+        <resourceEdge source="edit" routing="0" target="category_edit.jsp" />
+      </result>
+    </action>
+  </package>
+  <package name="shop.admin.product" location="1178,550" size="280,210">
+    <action name="product_*" location="65,71" size="150,83">
+      <result name="list">
+        <resourceEdge source="list" routing="0" target="product_list.jsp" />
+      </result>
+      <result name="input">
+        <resourceEdge source="input" routing="0" target="product_add.jsp" />
+      </result>
+      <result name="edit">
+        <resourceEdge source="edit" routing="0" target="product_edit.jsp" />
+      </result>
+    </action>
+  </package>
+  <package name="shop.admin.order" location="373,970" size="875,210">
+    <action name="order_*" location="660,61" size="150,104">
+      <result name="list">
+        <resourceEdge source="list" routing="0" target="order_list.jsp" />
+      </result>
+      <result name="select">
+        <resourceEdge source="select" routing="0" target="order_select.jsp" />
+      </result>
+      <result name="query">
+        <resourceEdge source="query" routing="0" target="order_query.jsp" />
+      </result>
+      <result name="update">
+        <resourceEdge source="update" routing="0" target="order_update_success.jsp" />
+      </result>
+    </action>
+  </package>
+  <webResource name="top.jsp" path="/WEB-INF/pages/admin/top.jsp" location="864,815" size="150,55" />
+  <webResource name="left.jsp" path="/WEB-INF/pages/admin/left.jsp" location="620,815" size="150,55" />
+  <webResource name="right.jsp" path="/WEB-INF/pages/admin/right.jsp" location="405,605" size="150,55" />
+  <webResource name="category_list.jsp" path="/WEB-INF/pages/admin/product/category_list.jsp" location="462,220" size="150,55" />
+  <webResource name="category_add.jsp" path="/WEB-INF/pages/admin/product/category_add.jsp" location="809,10" size="150,55" />
+  <webResource name="category_edit.jsp" path="/WEB-INF/pages/admin/product/category_edit.jsp" location="1159,220" size="150,55" />
+  <webResource name="product_list.jsp" path="/WEB-INF/pages/admin/product/product_list.jsp" location="1165,395" size="150,55" />
+  <webResource name="product_add.jsp" path="/WEB-INF/pages/admin/product/product_add.jsp" location="1511,605" size="150,55" />
+  <webResource name="product_edit.jsp" path="/WEB-INF/pages/admin/product/product_edit.jsp" location="1162,815" size="150,55" />
+  <webResource name="order_list.jsp" path="/WEB-INF/pages/admin/order/order_list.jsp" location="1283,1025" size="150,55" />
+  <webResource name="order_select.jsp" path="/WEB-INF/pages/admin/order/order_select.jsp" location="14,1025" size="150,55" />
+  <webResource name="order_query.jsp" path="/WEB-INF/pages/admin/order/order_query.jsp" location="259,815" size="150,55" />
+  <webResource name="order_update_success.jsp" path="/WEB-INF/pages/admin/order/order_update_success.jsp" location="931,1235" size="150,55" />
+</Struts2Diagram>
+

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="auxiliaryInfo" js="/wabacusdemo/js/demo.js">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px" border="0">
+			<report id="report_unitInfo" parenttitle="联网单位信息" type="form">
+			<display labeltdwidth="50"  valuetdwidth="100" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" clickorderby="true"></col>
+				<col column="UnitCode" label="单位编码" clickorderby="true"></col>				
+				<col column="NodeNum" label="总结点数" br="true"></col>
+				<col column="HeadName" label="联系人姓名" ></col>
+				<col column="UnitAddr" label="单位地址" valuestyleproperty="colspan='3'" br="true"></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="MonitoringUnit" label="监控单位" ></col>
+				<col column="CalledUnit" label="接警单位" br="true"></col>
+				<col column="RepairUnit" label="维保单位" br="true"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT distinct u1.*,MonitoringUnit=u2.UnitName,CalledUnit=u3.UnitName,RepairUnit=u4.UnitName 
+						FROM UnitInfo u1,UnitInfo u2,UnitInfo u3,UnitInfo u4 
+						where  u2.id=u1.MonitoringUnitId and u3.id=u1.CalledUnitId and u4.id=u1.RepairUnitId 
+						and {#condition#}]]>
+					</value>
+					<condition name="unitId" hidden="true">
+					<value>
+						<![CDATA[u1.id = '#data#' ]]>
+					</value>
+				</condition>
+				</select>
+				</sql>
+		</report>
+		<!-- 查看消控室详情 -->
+			<report id="reportSummaryControlRoomInfo" parenttitle="消控室信息"  type="detail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden"></col>
+				<col column="ControlRoomName" label="消控室名称" clickorderby="true"></col>
+				<col column="ControlRoomCode" label="消控室编码" clickorderby="true" br="true"></col>
+				<col column="RoomAddr" label="消控室所在地" clickorderby="true" ></col>
+				<col column="HeadName" label="负责人" clickorderby="true" br="true"></col>
+<!-- 				<col column="UnitName" label="所属单位" clickorderby="true"></col> -->
+				<col column="CreateTime" label="创建时间" clickorderby="true" datatype="timestamp"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT ControlRoomInfo.* FROM ControlRoomInfo where {#condition#}]]>
+					</value>
+					<condition name="unitId" hidden="true">
+						<value>
+							<![CDATA[(UnitId = '#data#')]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		<!-- 查看入驻单位 详情 -->
+		<report id="reportEnterUnitInfo" parenttitle="入驻单位信息" type="editablelist" pagesize="3">
+			<display >
+				<col column="id" displaytype="hidden"></col>
+				<col column="CompanyName" label="公司名" clickorderby="true"></col>
+				<col column="EnterTime" label="入驻时间" clickorderby="true" datatype="timestamp" br="true"></col>
+				<col column="LegalPersonName" label="法人" clickorderby="true" ></col>
+				<col column="LegalPersonTel" label="联系方式" clickorderby="true" br="true"></col>
+				<!-- <col column="UnitName" label="所属单位" clickorderby="true"></col> -->
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT EnterUnitInfo.* FROM EnterUnitInfo where {#condition#}]]>
+					</value>
+					<condition name="unitId" hidden="true">
+						<value>
+							<![CDATA[(UnitId = '#data#' )]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		<!-- 查看值班人员 详情 -->
+		<report id="reportWatchPersonInfo" parenttitle="值班人员位信息" type="editablelist" pagesize="3">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="WatchPersonName" label="姓名" clickorderby="true"></col>
+				<col column="ContactTel" label="联系方式" clickorderby="true" br="true"></col>
+				<col column="PersonId" label="身份证" clickorderby="true" ></col>
+				<col column="WorkCard" label="上岗证" clickorderby="true" br="true"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[
+							SELECT WatchPersonInfo.* FROM WatchPersonInfo where {#condition#}
+						]]>
+					</value>
+					<condition name="unitId" hidden="true">
+						<value>
+							<![CDATA[(UnitId = '#data#' )]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		</tabpanel>
+	</page>
+</applications>

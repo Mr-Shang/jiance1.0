@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.auxiliaryinfo.ControlRoomInfo" table="ControlRoomInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <many-to-one name="unitInfo" class="com.ccu.model.basicdata.UnitInfo" fetch="join" cascade="save-update">
+            <column name="UnitId" length="36" />
+        </many-to-one>
+        <property name="controlRoomCode">
+            <column name="ControlRoomCode" not-null="true" sql-type="nvarchar(50)" />
+        </property>
+        <property name="controlRoomName">
+            <column name="ControlRoomName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="createTime" type="timestamp">
+            <column name="CreateTime" length="23" />
+        </property>
+        <property name="roomAddr">
+            <column name="RoomAddr" sql-type="nvarchar(50)" />
+        </property>
+        <property name="headName">
+            <column name="HeadName" sql-type="nvarchar(50)" />
+        </property>
+    </class>
+</hibernate-mapping>

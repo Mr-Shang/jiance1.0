@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="statistical" js="/wabacusdemo/js/demo.js,/wabacusdemo/js/testcallback.js,/webresources/script/validate.js"
+		interceptor="com.ccu.pageInterceptor.statisticalPageInterceptor">	
+			<report id="showStatistical"  title="单位信息列表" type="editablelist" pagesize="3" >
+				<display>
+					<col column="id" displaytype="hidden"></col>
+					<col column="UnitCode" label="单位编码" ></col>
+					<col column="UnitName" label="单位名称"></col>
+					<col column="UnitAddr" label="单位地址"  width="300px"></col>
+					<col column="HeadName" label="联系人"></col>
+					<col column="HeadTel" label="联系电话" ></col>
+					<col property="check" column="{non-fromdb}" label="查岗报表" width="100px"></col>
+					<col property="count" column="{non-fromdb}" label="报警报表" width="100px"></col>
+					<col property="statistical" column="{non-fromdb}" label="统计图" width="100px"></col>
+				</display>
+				<format>
+					<value>
+
+			   <![CDATA[
+					check="<a href='javascript:void(0);' onclick=wx_winpage('admin/checkStatistical/checkStatistical_load.action?unitId="+id+"',{width:800,height:400,title:'查岗月报表'})>"+"查看"+"</a>";
+			   		count="<a href='javascript:void(0);' onclick=wx_winpage('admin/eventStatistical/eventReport_init.action?unitId="+id+"',{width:1200,height:580,title:'报警报表'})>"+"查看"+"</a>";
+			   		statistical="<a href='javascript:void(0);'  onclick=wx_winpage('admin/eventStatistical/statistical_draw.action?unitId="+id+"',{width:800,height:600,title:'统计图'})>"+"查看"+"</a>";
+			   ]]>
+			  </value>
+				</format>
+				<sql>
+					<select>
+						<value>
+						<![CDATA[select UnitInfo.* from UnitInfo where UnitType='联网单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="单位名称" labelposition="left" left="10">
+							<value>
+								<![CDATA[UnitName like  '%#data#%' ]]>
+							</value>
+							<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="联网单位" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					
+					</select>
+				</sql>
+			</report>
+
+	
+	</page>
+
+</applications>

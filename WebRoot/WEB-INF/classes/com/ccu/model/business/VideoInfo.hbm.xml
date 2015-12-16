@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.business.VideoInfo" table="VideoInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <property name="unitId" >
+        		<column name="UnitId"  length="36" sql-type="uniqueidentifier"></column>
+        </property>
+
+        <property name="url">
+            <column name="Url" not-null="true" sql-type="nvarchar(50)" />
+        </property>
+        <property name="description">
+            <column name="Description" sql-type="nvarchar(300)" />
+        </property>
+        <property name="isUsed" type="java.lang.Boolean">
+            <column name="IsUsed" />
+        </property>
+    </class>
+</hibernate-mapping>

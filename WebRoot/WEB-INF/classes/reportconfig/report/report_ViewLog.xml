@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="viewlog"  js="/wabacusdemo/js/demo.js"
+		interceptor="com.ccu.pageInterceptor.viewlogPageInterceptor">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px"  border="0">
+			<report id="logstatistics" parenttitle="登录统计"  title="用户登录基本信息列表" type="editablelist">
+				<interceptor>
+					<imports>
+	  			    	<import>com.wabacus.util.*</import>
+	  						<import>java.util.*</import>
+	  						<import>java.text.SimpleDateFormat</import>
+	  				</imports>
+				    <preaction>
+						<![CDATA[
+							String date1=rrequest.getStringAttribute("txtstarttime1","");
+							String date2=rrequest.getStringAttribute("txtendtime1","");
+							SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd 00:00");
+							SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+							if(date1.equals("") && date2.equals(""))
+							{
+								rrequest.setAttribute("txtstarttime1",df1.format(new Date()));
+								rrequest.setAttribute("txtendtime1",df2.format(new Date()));
+							}
+						]]>
+					</preaction>
+				</interceptor>
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UserId" displaytype="hidden"></col>
+					<col column="Account" label="登录名"></col>
+					<col column="UserName" label="用户姓名"></col>
+					<col column="RoleName" label="用户类型"></col>
+					<col column="UnitName" label="所属单位"></col>
+					<col column="Count" label="登录次数"></col>
+				</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[select distinct l.UserId,us.Account,us.UserName,r.RoleName,un.UnitName,Count=(select count(*) from LogInfo where us.id=LogInfo.UserId and {#condition#})
+										from LogInfo l,UserInfo us,Role r,UserReRole urr,UnitInfo un 
+										where l.UserId=us.id and r.id=urr.RoleId and urr.UserId=us.id and un.id=us.UnitId and {#condition#}
+							]]>
+						</value>
+						<condition name="txtAccount1" label="登录名" left="10" right="10" labelposition="left"> 
+							<value>
+								<![CDATA[(Account like %#data#%)]]>
+							</value>
+							<inputbox>
+					        	<typeprompt count="15" width="200">
+							    	<promptcol label="Account" matchmode="anywhere"></promptcol>
+							        <datasource>
+								    	<option dataset="@{select Account from UserInfo where {#matchcondition#}}"></option>
+							       	</datasource>
+					        	</typeprompt>
+					     	</inputbox>
+						</condition>
+						<condition name="txtUserName" label="用户姓名" left="10" right="10" labelposition="left"> 
+							<value>
+								<![CDATA[(UserName like %#data#%)]]>
+							</value>
+							<inputbox>
+					        	<typeprompt count="15" width="200">
+							    	<promptcol label="UserName" matchmode="anywhere"></promptcol>
+							        <datasource>
+								    	<option dataset="@{select UserName from UserInfo where {#matchcondition#}}"></option>
+							       	</datasource>
+					        	</typeprompt>
+					     	</inputbox>
+						</condition>
+						<condition name="txtstarttime1" label="起始日期" left="10" right="10" labelposition="left">
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[LoginTime >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtime1" label="截止日期" left="10" right="10" labelposition="left" >
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[LoginTime <= '#data#']]></value>
+						</condition>
+					</select>
+				</sql>
+			</report>
+			
+			<report id="operationrecord" parenttitle="操作记录"  title="用户操作基本信息列表" type="editablelist">
+				<interceptor>
+					<imports>
+	  			    	<import>com.wabacus.util.*</import>
+	  						<import>java.util.*</import>
+	  						<import>java.text.SimpleDateFormat</import>
+	  				</imports>
+				    <preaction>
+						<![CDATA[
+							String date1=rrequest.getStringAttribute("txtstarttime2","");
+							String date2=rrequest.getStringAttribute("txtendtime2","");
+							SimpleDateFormat df1 = new SimpleDateFormat("yyyy-MM-dd 00:00");
+							SimpleDateFormat df2 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+							if(date1.equals("") && date2.equals(""))
+							{
+								rrequest.setAttribute("txtstarttime2",df1.format(new Date()));
+								rrequest.setAttribute("txtendtime2",df2.format(new Date()));
+							}
+						]]>
+					</preaction>
+				</interceptor>
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UserId" displaytype="hidden"></col>
+					<col column="Account" label="登录名"></col>
+					<col column="UnitName" label="所属单位"></col>
+					<col column="MenuName" label="操作菜单"></col>
+					<col column="OperateTime" label="操作时间" datatype="timestamp{yyyy-MM-dd HH:mm}"></col>
+					<col column="UserIP" label="IP地址"></col>
+				</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[select d.UserId,a.Account,c.UnitName,d.MenuName,d.OperateTime,d.UserIP from LogInfo d,UserInfo a,UnitInfo c where d.UserId=a.id and c.id=a.UnitId and {#condition#} group by d.UserId,a.Account,c.UnitName,d.MenuName,d.OperateTime,d.UserIP]]>
+						</value>
+						<condition name="txtAccount2" label="登录名" left="10" right="10" labelposition="left"> 
+							<value>
+								<![CDATA[(Account like %#data#%)]]>
+							</value>
+							<inputbox>
+					        	<typeprompt count="15" width="200">
+							    	<promptcol label="Account" matchmode="anywhere"></promptcol>
+							        <datasource>
+								    	<option dataset="@{select Account from UserInfo where {#matchcondition#}}"></option>
+							       	</datasource>
+					        	</typeprompt>
+					     	</inputbox>
+						</condition>
+						<condition name="txtstarttime2" label="起始日期" left="10" right="10" labelposition="left">
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[OperateTime >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtime2" label="截止日期" left="10" right="10" labelposition="left" >
+							<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm"/>
+   							<value><![CDATA[OperateTime <= '#data#']]></value>
+						</condition>
+					</select>
+				</sql>
+			</report>
+		</tabpanel>
+	</page>
+</applications>

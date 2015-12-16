@@ -1,0 +1,85 @@
+package com.hb.project4.tools;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+
+import com.hb.project4.drawPanel.DrawJPanel;
+import com.hb.project4.shapes.LineShape;
+import com.hb.project4.shapes.SuperShape;
+
+public class LineTool extends SuperTool {
+
+	public LineTool(DrawJPanel j) {
+		super(j);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void mouseClickedAction(MouseEvent mouseEvent) {
+
+	}
+
+	@Override
+	public void mouseDraggedAction(MouseEvent mouseEvent) {
+		this.setNewDragPoint(mouseEvent.getPoint());
+		this.setOldDragPoint(this.getNewDragPoint());
+//		this.setNewDragPoint(null);
+
+		Graphics g = this.getJPanel().getGraphics();
+		g.setColor(this.getJPanel().getLinecolor());
+		g.setXORMode(Color.WHITE);
+
+		if (this.getOperateShape().getEnd() != null) {
+			this.getOperateShape().draw(g);
+		}
+		this.getOperateShape().setEnd(this.getNewDragPoint());
+		this.getOperateShape().draw(g);
+
+	}
+
+	@Override
+	public void mouseMovedAction(MouseEvent mouseEvent) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressedAction(MouseEvent mouseEvent) {
+		this.setBeginPoint(mouseEvent.getPoint());
+
+		this.setOldDragPoint(this.getBeginPoint());
+		this.setOldMovePoint(this.getBeginPoint());
+
+		this.setOperateShape(new LineShape());
+		this.getOperateShape().setClor(this.getJPanel().getLinecolor());
+		this.getOperateShape().setBegin(this.getBeginPoint());
+
+	}
+
+	@Override
+	public void mouseReleasedAction(MouseEvent mouseEvent) {
+		Graphics g = this.getJPanel().getGraphics();
+		g.setColor(this.getJPanel().getLinecolor());
+//		g.setXORMode(Color.WHITE);
+		this.setEndPoint(mouseEvent.getPoint());
+		if (this.getOldMovePoint() != null) {
+			this.getOperateShape().setEnd(this.getOldMovePoint());
+			this.getOperateShape().draw(g);
+		}
+		this.getOperateShape().setEnd(this.getEndPoint());
+		this.getOperateShape().draw(g);
+		this.getJPanel().getCurrentShapes().add(this.getOperateShape());
+
+		// add new Shapes to historyShapes
+		this.getJPanel().saveHistory();
+		
+		this.getJPanel().repaint();
+		this.setBeginPoint(null);
+		this.setEndPoint(null);
+
+	}
+
+}

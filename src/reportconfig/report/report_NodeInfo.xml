@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="nodeInfo" js="/wabacusblank/js/papercreate.js" 
+		interceptor="com.ccu.pageInterceptor.nodeInfoPageInterceptor">
+		<report id="showNodeInfo" title="抽检基本信息表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="{col-rowselect}" label="全选"  width="100px"></col>
+				<col column="{sequence:1}" label="序号"/>
+				
+				<col column="id" displaytype="hidden"/>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName"  label="所属单位" filter="condition{txtUnitName}" updatecol="@{UnitId}" width="200px">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(#data#所属单位不能为空)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				<col column="MachineCode" label="传输装置编号" filter="condition{txtMachineCode}" width="150px" >
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(#data#传输装置编号不能为空)" depends="UnitId">
+						<option dataset="@{select MachineCode from MachineInfo where MachineType ='传输装置' and UnitId like '%#UnitId#%'}" value= "MachineCode" label="MachineCode"></option>
+					</inputbox>				
+				</col>	
+				<col column="NodeName" label="节点名称"  width="150px"/>
+				<col column="NodeType" label="节点类型"/>
+				<col column="MachineIndex" label="主机号"/>
+				<col column="MachineLoop" label="回路"/>
+				<col column="Node" label="节点"/>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT n.*,u.UnitName FROM NodeInfo n,UnitInfo u where u.id = UnitId and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(u.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType = '联网单位'" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition> 
+					<condition name="txtMachineCode" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(n.MachineCode like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="传输装置编制" value=""></option>
+						      <option dataset="@{select MachineCode from MachineInfo where MachineType = '传输装置'" label="MachineCode" value="MachineCode"></option>
+					     </inputbox>
+					</condition>
+					<condition name="txtNodeName" label="节点名称" left="10" labelposition="left" right="10"> 
+						<value>
+							<![CDATA[(NodeName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="NodeName" title="节点名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select NodeName from	NodeInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				
+				<insert>
+					insert into NodeInfo(@{NodeName},@{NodeType},@{MachineIndex},@{MachineLoop},@{Node},@{UnitId},@{MachineCode});
+				</insert>
+				<update>
+					update NodeInfo(@{NodeName},@{NodeType},@{MachineIndex},@{MachineLoop},@{Node}) where id=@{id};
+				</update>
+				<!--<delete>
+					delete from NodeInfo where id=@{id};
+				</delete>
+			--></sql>
+			<buttons buttonspacing="5">
+				<button name="addInterfaceInfo" label="添加" position="title">
+					addListReportNewDataRow('nodeInfo','showNodeInfo');
+				</button>
+				<button name="saveInterfaceInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'nodeInfo',savingReportIds:[{reportid:'showNodeInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteInterfaceInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete dbo.NodeInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showNodeInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showNodeInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>	
+	</page>
+</applications>

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="enterUnitInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.enterUnitInfoPageInterceptor">
+		<report id="showEnterUnit" title="入驻单位基本信息列表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" width="200px" updatecol="@{UnitId}" filter="condition{txtUnitName}">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(所属单位必须选择)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				<col column="CompanyName" label="公司名称" width="300">
+					<inputbox jsvalidate="isNotEmpty(#data#公司名称不能为空)"></inputbox>
+				</col>
+				<col column="LegalPersonName" label="法人">
+					<inputbox jsvalidate="isNotEmpty(#data#法人不能为空)"></inputbox>
+				</col>
+				<col column="LegalPersonTel" label="电话">
+					<inputbox jsvalidate="isNotEmpty(#data#电话不能为空)"></inputbox>
+				</col>
+				<col column="EnterTime" label="入驻时间" datatype="date" width="200px">
+					<inputbox  type="datepicker" dateformat="yyyy-MM-dd" styleproperty="style='width:200px'" jsvalidate="isNotEmpty(#data#入住时间不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select EnterUnitInfo.*,UnitInfo.UnitName from EnterUnitInfo,UnitInfo where UnitInfo.id = EnterUnitInfo.UnitId and {#condition#} order by UnitInfo.UnitName asc]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitInfo.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+					<condition name="txtCompanyName" label="公司名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(CompanyName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="CompanyName" title="公司名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select CompanyName from	EnterUnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				<insert>
+		  		 	insert into EnterUnitInfo (id=newid(),@{CompanyName},@{LegalPersonName},@{LegalPersonTel},@{UnitId},@{EnterTime});
+			  	</insert>
+			  	<update>
+			  		update EnterUnitInfo (@{CompanyName},@{LegalPersonName},@{LegalPersonTel},@{UnitId},@{EnterTime}) where id = @{id};
+			  	</update>
+				<!--<insert pageurl="report{editforlistpageEnterUnit.report_update_add}" popupparams="{title:'新增入驻单位信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageEnterUnit.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑单位资料'}"/>
+				<delete>
+					<value>
+						delete from EnterUnitInfo where id = @{id};
+					</value>
+				</delete>
+			--></sql>
+			<buttons buttonspacing="5">
+				<button name="addEnterUnitInfo" label="添加" position="title">
+					addListReportNewDataRow('enterUnitInfo','showEnterUnit');
+				</button>
+				<button name="saveEnterUnitInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'enterUnitInfo',savingReportIds:[{reportid:'showEnterUnit',updatetype:'save'}]});
+				</button>
+				<button name="deleteEnterUnitInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete EnterUnitInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showEnterUnit",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showEnterUnit",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+<!-- 	<page id="editforlistpageEnterUnit" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="CompanyName" label="公司名称">
+					<inputbox jsvalidate="isNotEmpty(#data#公司名称不能为空)"></inputbox>
+				</col>
+				<col column="LegalPersonName" label="法人" br="true">
+					<inputbox jsvalidate="isNotEmpty(#data#法人不能为空)"></inputbox>
+				</col>
+				<col column="LegalPersonTel" label="电话">
+					<inputbox jsvalidate="isNotEmpty(#data#电话不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位" br="true">
+					 <inputbox type="selectbox" servervalidate="isNotEmpty(所属单位必须选择)">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+				<col column="EnterTime" label="入驻时间" clickorderby="true">
+					<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" jsvalidate="isNotEmpty(#data#入住时间不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM EnterUnitInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into EnterUnitInfo (id=newid(),@{CompanyName},@{LegalPersonName},@{LegalPersonTel},@{UnitId},@{EnterTime});
+			  	</insert>
+			  	<update>
+			  		update EnterUnitInfo (@{CompanyName},@{LegalPersonName},@{LegalPersonTel},@{UnitId},@{EnterTime}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page> -->
+</applications>

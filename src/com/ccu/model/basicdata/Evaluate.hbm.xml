@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.basicdata.Evaluate" table="Evaluate" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+       	<property name="unitId">
+            <column name="UnitId"/>
+        </property>
+  		<property name="testResult" type="java.lang.Double">
+  			<column name="TestResult"></column>
+  		</property>
+  		<property name="goodResult" type="java.lang.Double">
+  			<column name="GoodResult"></column>
+  		</property>
+  		<property name="assessmentTime" type="timestamp">
+            <column name="AssessmentTime" length="23" />
+        </property>
+    </class>
+</hibernate-mapping>

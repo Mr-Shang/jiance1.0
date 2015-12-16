@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.business.CheckInfo" table="CheckInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <many-to-one name="unitInfo" class="com.ccu.model.basicdata.UnitInfo" fetch="join" cascade="save-update">
+            <column name="UnitId" length="36" not-null="true" />
+        </many-to-one>
+        <property name="checkPersonName">
+            <column name="CheckPersonName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="checkTime" type="timestamp">
+            <column name="CheckTime" length="23" />
+        </property>
+        <property name="unitName">
+            <column name="UnitName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="unitAddr">
+            <column name="UnitAddr" sql-type="nvarchar(50)" />
+        </property>
+        <property name="headName">
+            <column name="HeadName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="answerTime" type="timestamp">
+            <column name="AnswerTime" length="23"  />
+        </property>
+        <property name="isAnswer" type="java.lang.Boolean">
+            <column name="IsAnswer" not-null="true" />
+        </property>
+        <property name="joinTime" type="timestamp">
+            <column name="joinTime" length="23" />
+        </property>
+        <property name="nodeNum" type="java.lang.Integer">
+            <column name="NodeNum" />
+        </property>
+    </class>
+</hibernate-mapping>

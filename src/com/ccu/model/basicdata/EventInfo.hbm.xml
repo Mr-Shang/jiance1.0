@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.basicdata.EventInfo" table="EventInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+       	<property name="unitId">
+            <column name="UnitId"/>
+        </property>
+        <property name="handleUserId">
+            <column name="HandleUserId"/>
+        </property>
+        <property name="eventTypeId">
+            <column name="EventTypeId"/>
+        </property>
+        <property name="unitName">
+            <column name="UnitName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="handleUser">
+            <column name="HandleUser" sql-type="nvarchar(50)" />
+        </property>
+        <property name="unitAddr">
+            <column name="UnitAddr" sql-type="nvarchar(50)" />
+        </property>
+        <property name="contactTel">
+            <column name="ContactTel" sql-type="nvarchar(50)" />
+        </property>
+        <property name="machineCode">
+            <column name="MachineCode" sql-type="nvarchar(50)" />
+        </property>
+        <property name="alertMachine">
+            <column name="AlertMachine" sql-type="nvarchar(50)" />
+        </property>
+        <property name="alertSource">
+            <column name="AlertSource" sql-type="nvarchar(300)" />
+        </property>
+        <property name="alertDescription">
+            <column name="AlertDescription" sql-type="nvarchar(300)" />
+        </property>
+        <property name="happenPlace">
+            <column name="HappenPlace" sql-type="nvarchar(50)" />
+        </property>
+        <property name="eventName">
+            <column name="EventName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="happenTime">
+            <column name="HappenTime" sql-type="nvarchar(300)" />
+        </property>
+        <property name="eventDescription">
+            <column name="EventDescription" sql-type="nvarchar(300)" />
+        </property>
+        <property name="handleDescription">
+            <column name="HandleDescription" sql-type="nvarchar(300)" />
+        </property>
+        <property name="handleTime">
+            <column name="HandleTime" sql-type="nvarchar(300)" />
+        </property>
+        <property name="isHandle" type="java.lang.Boolean">
+            <column name="IsHandle" not-null="true" />
+        </property>
+        <property name="isFalseReport" type="java.lang.Boolean">
+            <column name="IsFalseReport" />
+        </property>
+    </class>
+</hibernate-mapping>

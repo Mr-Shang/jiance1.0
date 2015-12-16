@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="DutyRecord" js="/webresources/script/validate.js,/wabacusdemo/js/demo.js"
+	interceptor="com.ccu.pageInterceptor.DutyRecordPageInterceptor">
+		<tabpanel id="tabpanel1" titlestyle="1" margin="10">
+			<report id="Showdutyrecord" title="值班记录基本信息表" parenttitle="值班记录表" type="editablelist2"
+				interceptor="com.ccu.reportInterceptor.reportInterceptor">
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="id" displaytype="hidden" ></col>
+					<col column="UnitId" displaytype="hidden"></col> 
+					<col column="UnitName" label="所属单位" updatecol="@{UnitId}">
+						<inputbox type="selectbox" servervalidate="isNotEmpty(${invalid.isnotempty})" styleproperty="style='width:98%'">
+							<option label="==请选择==" value="" ></option>
+							<option dataset="@{select id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+						</inputbox>
+					</col>
+					<col column="DutyPeopleName" label="值班人姓名">
+						<inputbox jsvalidate="isNotEmpty(#data#姓名不能为空)"/>
+					</col>
+					<col column="DutyDate" label="值班日期" clickorderby="true" width="100px" datatype="date{yyyy-MM-dd}">
+						<inputbox type="datepicker"></inputbox>
+					</col>
+					<col column="Description" label="有无异常描述" datatype="clob">
+						<inputbox type="textareabox" jsvalidate="isNotEmpty(#data#异常描述不能为空)"></inputbox>
+					</col>
+				</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[SELECT r.*,u.UnitName FROM DutyRecord r,UnitInfo u where u.id=r.UnitId and {#condition#}]]>
+						</value>
+						<condition name="txtstarttime" label="起始日期"  datatype="date{yyyy-MM-dd}">
+							<inputbox type="datepicker"  jsvalidate="isDate(#data#格式不对，必须为yyyy-MM-dd格式)"/> 
+   							<value><![CDATA[DutyDate >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtime" label="截止日期" datatype="date{yyyy-MM-dd}">
+							<inputbox type="datepicker"  jsvalidate="isDate(#data#格式不对，必须为yyyy-MM-dd格式)"/>
+   							<value><![CDATA[DutyDate <= '#data#']]></value>
+						</condition> 
+					</select>
+					<insert>
+						<params>
+			    	    	<param name="DutyDate" value="now{}" datatype="date{yyyy-MM-dd}"></param>
+			        	</params>
+			        	<value>
+			        		insert into DutyRecord(id=newid(),@{UnitId},@{DutyPeopleName},DutyDate=#{DutyDate},@{Description});
+			        	</value>
+					</insert>
+				</sql>
+				<format>
+					<imports>
+				    	<import>com.wabacus.util.*</import>
+				    	<import>com.wabacus</import>
+			    	</imports>
+			    </format>
+			</report>
+		</tabpanel>
+	</page>
+</applications>

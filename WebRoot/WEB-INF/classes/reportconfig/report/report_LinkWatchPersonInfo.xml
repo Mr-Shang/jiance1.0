@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="linkWatchPersonInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<report id="showLinkWatchPersonInfo" title="值班人员基本信息列表" type="editablelist2" rowselect="multiple-checkbox">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitId" displaytype="hidden" ></col>
+				<col column="UnitName" label="所属单位" width="200px" >
+				</col>
+				<col column="WatchPersonName" label="姓名" width="120px">
+					<inputbox jsvalidate="isNotEmpty(#data#姓名不能为空)"></inputbox>
+				</col>
+				<col column="ContactTel" label="联系电话" width="150px"></col>
+				<col column="PersonId" label="身份证" width="250px">
+					<inputbox jsvalidate="isNotEmpty(#data#身份证不能为空)"></inputbox>
+				</col>
+				<col column="WorkCard" label="上岗证" width="250px">
+					<inputbox jsvalidate="isNotEmpty(#data#上岗证不能为空)"></inputbox>
+				</col>	
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select WatchPersonInfo.*, UnitInfo.UnitName from WatchPersonInfo,UnitInfo where  {#condition#} ]]>
+					</value>
+				<condition name="txtUnitId" label="所属单位"   source="session{unitId}" hidden="true">
+						<value>
+							 <![CDATA[(WatchPersonInfo.UnitId = '#data#')]]>
+						</value>
+				</condition>
+				<condition name="txtUnitName" label="所属单位"   source="session{unitId}" hidden="true">
+						<value>
+							 <![CDATA[(UnitInfo.Id = '#data#')]]>
+						</value>
+				</condition>
+				<condition name="txtWatchPersonName" label="姓名" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(WatchPersonName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="WatchPersonName" title="姓名" matchmode="anywhere"></promptcol>
+						
+						       <datasource>        
+						       		<option dataset="@{select WatchPersonName from WatchPersonInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="PersonId" label="身份证" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(PersonId like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="PersonId" title="身份证" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select PersonId from WatchPersonInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				
+				<insert>
+				<params>
+					<param name="user" value="session{userId}"/>
+					<param name="unitId" value="session{unitId}"/>
+				</params>
+					insert into WatchPersonInfo (id=newid(),@{WatchPersonName},@{ContactTel},@{PersonId},@{WorkCard},UnitId=#{unitId});
+				</insert>
+				<update>
+			  		update WatchPersonInfo (@{WatchPersonName},@{ContactTel},@{PersonId},@{WorkCard}) where id = @{id};
+			  	</update>
+				<!--<insert pageurl="report{editforlistpageWatchPersonInfo.report_update_add}" popupparams="{title:'新增值班人员信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageWatchPersonInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑值班人员资料',width:850,height:600}"/>
+				--><!--<delete>
+					<value>
+						delete from WatchPersonInfo where id = @{id};
+					</value>
+				</delete>-->
+			</sql>
+			<buttons buttonspacing="5">
+				<button name="addWatchPersonInfo" label="添加" position="title">
+					addListReportNewDataRow('linkWatchPersonInfo','showLinkWatchPersonInfo');
+				</button>
+				<button name="saveWatchPersonInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'linkWatchPersonInfo',savingReportIds:[{reportid:'showLinkWatchPersonInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteWatchPersonInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete from WatchPersonInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showLinkWatchPersonInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showLinkWatchPersonInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+</applications>

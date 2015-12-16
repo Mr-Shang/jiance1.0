@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="checkInfo" js="/wabacusdemo/js/demo.js" 
+		interceptor="com.ccu.pageInterceptor.checkInfoPageInterceptor" >
+		<report id="showCheckInfo" title="联网设备信息列表" rowselect="multiple-checkbox" type="editablelist" >
+			<display> 	
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName"  label="所属单位" filter="condition{txtUnitName}" rowgroup="true" ></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="MachineCode" label="设备编码"></col>
+				<col column="MachineName" label="设备名称"></col>
+				<col column="IsUsed" label="联机状态"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select m.id,m.MachineCode,m.MachineName,m.IsUsed,u.UnitName from MachineInfo m,UnitInfo u where u.id=m.UnitId and m.MachineType='传输装置' and {#condition#}]]>
+					</value>
+					<condition name="txtMachineCode" label="设备编码" left="10" >
+						<value>
+							<![CDATA[(m.MachineCode like %#data#%)]]>
+						</value>
+					</condition>
+					<condition name="txtMachineName" label="设备名称" left="10" right="5"> 
+						<value>
+							<![CDATA[(m.MachineName like %#data#%)]]>
+						</value>
+					</condition>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(u.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select distinct UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+	
+				</select>
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("1")) IsUsed="联机";
+					else if(IsUsed.equals("0")) IsUsed="脱机";
+				</value>
+			
+			</format>
+			<buttons buttonspacing="5">
+				<button name="check" position="title" label="查岗" >
+					gotoServerAction('checkInfo','showCheckInfo','com.ccu.wabacus.checkInfo.CheckInfoAnswer');					
+				</button>
+				<button name="checkAll" position="title" label="查询全部岗位">
+					wx_winpage('ShowReport.wx?PAGEID=CheckTypeAll');
+				</button>
+				<button name="showCheckAnswer" position="title" label="查看查岗应答">
+					wx_winpage('ShowReport.wx?PAGEID=checkAnswerInfo',{width:1000,height:500,title:'查岗结果'});
+				</button>
+			</buttons>		
+		</report>
+		</page>
+		<!-- 查岗应答报表 -->
+		<page id="checkAnswerInfo" js="/wabacusdemo/js/demo.js">
+		<report id="check_answer" title="查岗应答信息">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName"  label="查岗单位" filter="condition{txtUnitName}" rowgroup="true" ></col>
+				<col column="MachineCode" label="设备编码" filter="condition{txtMachine}" rowgroup="true"></col>
+				<col column="CheckPersonName" label="查岗人" width="80px"></col>
+				<col column="CheckType" label="查岗类型"  ></col>
+				<col column="CheckTime" label="查岗时间" datatype="timestamp" ></col>
+				<col column="AnswerTime" label="应答时间"></col>
+				<col column="IsAnswer" label="是否应答"></col>
+				<col property="personCard" column="{non-fromdb}" label="身份证信息" width="130px"></col>
+				<col property="photo" column="{non-fromdb}" label="照片信息" width="130px"></col>
+			</display>
+				<format>
+					<value>
+					IsAnswer=IsAnswer==null?"":IsAnswer.trim();
+					if(IsAnswer.equals("0")) IsAnswer="否";
+					else if(IsAnswer.equals("1")) IsAnswer="是";
+			   <![CDATA[
+					personCard="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=auxiliaryInfo&UnitName="+UnitName+"',{width:600,title:'身份证信息'})>"+"查看"+"</a>";
+			   		photo="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=tagPage&UnitId="+id+"',{width:400,height:200,title:'图像'})>"+"查看"+"</a>";
+			   	]]>
+			  </value>
+
+				</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT  * FROM CheckInfo where {#condition#} order by CheckTime desc]]>
+					</value>
+					
+					<condition name="txtIsAnswer" label="查岗结果" left="30">
+						<value>
+							<![CDATA[IsAnswer = #data#]]>
+						</value>
+						<inputbox  type="selectbox">
+							<option label="查岗结果" value=""></option>
+							<option label="已应答" value="1"></option>
+							<option label="未应答" value="0"></option>
+						</inputbox>
+						
+					</condition>		
+					<condition name="txtUnitName" label="所属单位" hidden="true">
+						<value>
+							 <![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+					<condition name="txtMachine" label="设备编码" left="20" hidden="true">
+					     <value>
+							<![CDATA[(MachineCode like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" depends="txtUnitName">
+						      <option label="设备编码" value=""></option>
+						      <option label="无" value="" type="false"></option>
+						      <option dataset="@{select MachineCode from MachineInfo where MachineType='传输装置' and UnitId like (select id from UnitInfo where UnitName like '%#txtUnitName#%') }" label="MachineCode" value="MachineCode"></option>
+					     </inputbox>
+				    </condition>
+				   	<condition name="txtQCheckTime" datatype="" label="起始时间" left="20">
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[CheckTime >= '#data#']]>
+						</value>
+					</condition>
+					<condition name="txtZCheckTime" datatype="" label="终止时间" left="20" right="20">
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[CheckTime <= '#data#']]>
+						</value>
+					</condition>
+				</select>
+			
+			</sql>
+
+<!-- 			<buttons>
+				<button name="button" position="title" label="查看查岗结果">
+						refresh();
+				</button>
+			</buttons> -->
+		</report>
+		</page>
+	<!-- 联网单位详细信息列表  -->
+	<page id="summary" js="/webresources/script/validate.js">
+		<report id="reportSummary" title="联网单位详细信息" type="detail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="单位名称" clickorderby="true"></col>
+				<col column="UnitCode" label="单位编码" clickorderby="true" br="true"></col>
+				<col column="UnitType" label="单位类型" clickorderby="true" ></col>
+				<col column="UnitAddr" label="单位地址" clickorderby="true" br="true"></col>
+				<col column="NodeNum" label="总结点数" clickorderby="true"></col>
+				<col column="IsRemove" label="是否排除" clickorderby="true"  br="true">
+					 <inputbox type="radiobox">
+						    <option value="0" label="否"></option> 
+						    <option value="1" label="是"></option>
+					 </inputbox>
+				</col>
+				<col column="HeadName" label="联系人" clickorderby="true" ></col>
+				<col column="HeadTel" label="联系电话" clickorderby="true"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+						<value>
+							<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	</page>
+</applications>

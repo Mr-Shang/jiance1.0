@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="interfaceInfoMainPage" height="400px" width="600px" >
+	  <framepanel  id="showMoNi" border="3" title="模拟量" margin="10px" bordercolor="#ff0000">
+		<report id="interfaceInfoReportMoNi" type="editablelist" >
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="Port" label="端口索引"></col>
+				<col column="MachineCode" label="设备编码"></col>
+				<col column="InterfaceName" label="接口名称"></col>
+				<col column="MaxValue" label="最大值"></col>
+				<col column="MinValue" label="最小值"></col>
+				<col column="Unit" label="单位"></col>
+				<col column="CurrentValue" label="当前值（模拟量）"></col>
+				<col column="CurrentTime" label="当前时间"></col>
+				<col property="graphic" column="{non-fromdb}" label="统计"></col>
+			</display>
+			<format>
+			     <value>
+			   <![CDATA[
+			   		graphic="<a href='javascript:void(0);' onclick=wx_winpage('admin/interfaceStatistical/interfaceStatistical_load().action?port="+Port+"machineCode=" + MachineCode + "',{width:800,height:600,title:'统计信息')>"+"查看"+"</a>";
+			   	]]>
+			  </value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT id,Port,InterfaceName,MaxValue,MinValue,Unit,CurrentValue,MachineCode,max(CurrentTime) as t FROM InterfaceRecord where InterfaceType = '模拟量' and  {#condition#}  group by id,Port,InterfaceName,MaxValue,MinValue,Unit,CurrentValue,MachineCode ]]>
+					</value>
+					<condition name="MachineCode" hidden="true">
+						<value>
+							<![CDATA[(MachineCode = '#data#' )]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	  </framepanel>
+<!-- 	  <framepanel id="showShuZi" title="数字量" border="3" margin="10px" bordercolor="#00ced1">
+	    <report id="interfaceInfoReportShuZi" type="editablelist" >
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="MachineCode" label="RTU编码"></col>
+				<col column="Port" label="端口索引"></col>
+				<col column="InterfaceName" label="接口名称"></col>
+				<col column="ExpressionKey" label="公示关键字" displaytype="hidden"></col>
+				<col column="InterfaceType" label="接口类型" displaytype="hidden"></col>
+				<col column="ShowName" label="当前值（数字量）"></col>	
+				<col column="CurrentTime" label="当前时间"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM InterfaceRecord where InterfaceType = '数字量' and CurrentTime = max(CurrentTime) and {#condition#}]]>
+					</value>
+					<condition name="MachineCode" hidden="true">
+						<value>
+							<![CDATA[(MachineCode = '#data#' )]]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+	  </framepanel> -->
+	</page>
+</applications>

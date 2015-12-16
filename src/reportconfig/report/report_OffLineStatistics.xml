@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="OffLineStatistics" js="/webresources/script/validate.js,/wabacusdemo/js/demo.js"
+		interceptor="com.ccu.pageInterceptor.OffLineStatisticsPageInterceptor">
+		<tabpanel id="tabpanel1"  margin="10px" titlestyle="2"  titlewidth="150px"  border="0">
+		<report id="showOffLineStatistics" parenttitle="设备离在线统计表" title="设备基本信息列表" type="editablelist">
+			<interceptor>
+					<imports>
+	  			    	<import>com.wabacus.util.*</import>
+	  						<import>java.util.*</import>
+	  						<import>java.text.SimpleDateFormat</import>
+	  				</imports>
+				    <preaction>
+						<![CDATA[
+							String date5=rrequest.getStringAttribute("txtstarttime3","");
+							String date6=rrequest.getStringAttribute("txtendtime3","");
+							SimpleDateFormat df5 = new SimpleDateFormat("yyyy-MM-dd");
+							SimpleDateFormat df6 = new SimpleDateFormat("yyyy-MM-dd");
+							if(date5.equals("") && date6.equals(""))
+							{
+								rrequest.setAttribute("txtstarttime3",df5.format(new Date()));
+								rrequest.setAttribute("txtendtime3",df6.format(new Date()));
+							}
+						]]>
+					</preaction>
+				</interceptor>
+			<display>
+				<col column="{sequence:1}" label="序号"/>
+				<col column="MachineCode" label="设备编码"/>
+				<col column="MachineName" label="设备名称"/>
+				<col column="UnitId" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位"/>
+				<col column="IsUsed" label="状态"/>
+				<col column="StartTime" displaytype="hidden"></col>
+				<col column="Count" label="离线次数"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select distinct m.MachineCode,m.MachineName,m.UnitId,u.UnitName,m.IsUsed,o.StartTime,Count=(select count(*) from OffLineStatistics where m.MachineCode=OffLineStatistics.MachineCode and OffLineStatistics.State=1) 
+									from MachineInfo m,UnitInfo u,OffLineStatistics o 
+									where u.id=m.UnitId and m.MachineCode=o.MachineCode and {#condition#}
+						]]>
+					</value>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					    	<typeprompt count="15" width="200">
+								<promptcol label="UnitName" matchmode="anywhere"></promptcol>
+							    	<datasource>
+							   			<option dataset="@{select UnitName from UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					    </inputbox>
+					</condition>
+					<condition name="txtstarttime3" label="起始日期" left="10" right="10" labelposition="left">
+							<inputbox type="datepicker"/>
+   							<value><![CDATA[StartTime >= '#data#']]></value>
+						</condition>
+						<condition name="txtendtime3" label="截止日期" left="10" right="10" labelposition="left" >
+							<inputbox type="datepicker"/>
+   							<value><![CDATA[StartTime <= '#data#']]></value>
+						</condition>
+				</select>
+			</sql>
+			<format>
+		    	<value>
+					IsUsed=IsUsed==null?"1":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="脱机";
+					else IsUsed="联机";
+				</value>
+			</format>
+		</report>
+		</tabpanel>
+	</page>
+</applications>

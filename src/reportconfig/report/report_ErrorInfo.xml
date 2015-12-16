@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="ErrorInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<tabpanel id="tabpanel1" margin="10px" titlestyle="2" asyn="false">
+			<report id="report1" parenttitle="水系统情况" type="editablelist2">
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UnitId" displaytype="hidden"></col>
+					<col column="Port" label="端口号"></col>
+					<col column="InterfaceName" label="端口名称"></col>
+					<col column="InterfaceType" label="端口类型"></col>
+					<col column="Count" label="故障次数"></col>
+				</display>
+				<sql>
+				<select>
+					<value>
+						<![CDATA[select *,Count=(select count(*) from ErrorInterface where InterfaceInfo.Port=ErrorInterface.ErrorPort and InterfaceInfo.MachineCode=ErrorInterface.MachineCode) from InterfaceInfo where {#condition#}]]>
+					</value>
+					<condition name="unitid" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitId = '#data#')]]>
+						</value>
+					</condition> 
+				</select>
+				</sql>
+			</report>
+			
+			<report id="report2" parenttitle="报警故障情况" type="editablelist2">
+				<display>
+					<col column="{sequence:1}" label="序号"/>
+					<col column="UnitId" displaytype="hidden"></col>
+					<col column="EventName" label="事件名称"></col>
+					<col column="AlertSource" label="报警源"></col>
+					<col column="HappenPlace" label="发生地点"></col>
+					<col column="AlertDescription" label="描述"></col>
+				</display>
+				<sql>
+				<select>
+					<value>
+						<![CDATA[select EventInfo.* from EventInfo,EventType where (EventType.TypeName='故障' or EventType.TypeName='丢失') and EventType.id=EventInfo.EventTypeId and {#condition#}]]>
+					</value>
+					<condition name="unitid" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitId = '#data#')]]>
+						</value>
+					</condition> 
+				</select>
+				</sql>
+			</report>
+			
+			<buttons>
+				<button name="button1" position="top" label="计算完好率">
+					GetReportData('ErrorInfo','report1',{UnitId:true,Count:true});
+				</button>
+			</buttons>
+		</tabpanel>
+	</page>
+</applications>

@@ -1,0 +1,134 @@
+@charset "utf-8";
+
+/*---------- 整体 ---------*/
+
+* { word-break: break-all; word-wrap: break-word; }
+html, body { height: 100%; }
+body { background: #FFF; color: #000;line-height: 1.5em;margin: 0; padding: 0;}
+body, h1, h2, h3, h4, h5, p, ul, dl, ol, form, fieldset { margin: 0; padding: 0; }
+body, td, input, textarea, button { font-size: 12px; font-family: "宋体"; }
+input.text{ border: 1px solid #86B9D6; width: 200px; padding: 3px 2px; background: #FDFFF5; }
+textarea.text{ border: 1px solid #86B9D6; padding: 3px 2px; background: #FDFFF5; }
+
+
+/*---------- 解决IE6滚动条问题 ---------*/
+
+.div_bk{ height: 99%; width: 100%; overflow-x: hidden; overflow-y: auto; }
+
+
+/*---------- 功能链接区 ---------*/
+	
+#pagehead { background: url(img/page_head.gif) repeat-x 0 0; border-top: 2px solid #86B9D6; }
+#pagehead tr { background: url(img/page_head.gif) no-repeat 100% -80px; }
+h1 { background: url(img/page_head.gif) no-repeat 0 -40px; color: #6774A8; line-height: 40px; font-size: 14px; padding-left: 18px; margin: 0; }
+
+/* 功能链接 */
+.actions { text-align: right; padding-right: 10px; padding-top: 9px; }
+#pagehead .actions tr { background-image: none; }
+.actions td { text-align: center; padding: 0 10px; line-height: 30px; height: 30px; }
+
+/* 选中功能 */
+.actions td.active { background: #FFF; border: solid #86B9D6; border-width: 1px 1px 0; cursor:pointer; }
+
+/* 添加功能 */
+.actions a.add { background: url(img/action_icon_add.gif) no-repeat; padding-left: 17px; cursor:pointer; }
+
+
+
+/*---------- 搜索、添加区 ---------*/
+
+.maintable { width: 100%; border-collapse: collapse; border: solid; border-color: #86B9D6 #D8DDE5 #D8DDE5; border-width: 2px 1px 1px; }
+.maintable th, .maintable td { border: 1px solid #D8DDE5; padding: 5px 5px 5px 10px; }
+.maintable th { background: #F3F7FF; text-align: left; color: #0D58A5; font-weight: normal; }
+/* 为嵌套的表格移除边框 */
+.maintable td th, .maintable td td { border: none; }
+.maintable th p { margin: 0; color: #909DC6; }
+
+
+/*---------- 列表区 ---------*/
+
+.listtable { width: 100%; border-collapse: collapse; border: solid; border-color: #86B9D6 #D8DDE5 #D8DDE5; border-width: 2px 1px 1px;}
+.listtable th { background: #F3F7FF; color: #6774A8; border-bottom: 1px solid #86B9D6; padding: 6px; }
+.listtable td { border: 1px solid #D8DDE5; padding: 6px;}
+/*---------- 列表区 ---------*/
+.stripe tr.alt td {background: #eef7fc; }
+.stripe tr.over td {background: #deedfc;}
+
+	
+/*---------- 顶部分页功能区 ----------*/
+.toptable { width: 100%; border-collapse: collapse; border: solid; border-color: #86B9D6 #D8DDE5 #D8DDE5; border-width: 2px 1px 1px; margin: 10px 0 -10px 0; }
+.toptable td, .toptable th { padding: 9px 5px 6px 6px;_padding: 9px 6px 6px 6px;  border: 1px solid #D8DDE5; }
+.toptable td { padding: 5px; line-height: 24px}
+.toptable th { background: #F3F7FF; font-weight: normal; text-align: left; }
+
+
+
+/*---------- 底部分页功能区 ---------*/
+.btmtable { width: 100%; border-collapse: collapse; border: solid; border-color: #86B9D6 #D8DDE5 #D8DDE5; border-width: 2px 1px 1px; }
+.btmtable td, .btmtable th { padding: 9px 5px 6px 6px;_padding: 9px 6px 6px 6px;  border: 1px solid #D8DDE5; }
+.btmtable td { padding: 5px; line-height: 24px}
+.btmtable th { background: #F3F7FF; font-weight: normal; text-align: left; }
+
+
+/*---------- 按钮 ---------*/
+
+.buttons { clear: both; padding: 10px; text-align: center; }
+.buttons input { padding: 5px 5px 2px; color: #6774A8; background: #F9F9F9; border: solid ; border-width: 1px 1px 4px; cursor: pointer; overflow: visible; }
+.buttons>input { width: auto; }
+/* 提交按钮、主按钮 */
+.buttons input.submit { padding: 5px 5px 2px; background: #C3D9FF; border-color: #86B9D6; font-weight: bold; }
+button.warningbtn { margin-left:5px;background: #EFEAD3; color: #808080; border: 1px solid; border-color: #FFF #A1A1A1 #A1A1A1 #FFF; height: 32px;}
+
+/* 搜索、查询按钮 */
+.s_button { padding: 5px 5px 2px; color: #6774A8; background: #F9F9F9; border: solid #CBCBCB; border-width: 1px 1px 4px; cursor: pointer; width: 0; overflow: visible; width: auto; margin-left: 20px; }
+
+
+
+/*---------- 超级连接 ---------*/
+
+a { color: #46498E; text-decoration: none; }
+
+/* 悬浮显示下划线 */
+a:hover { text-decoration: underline; }
+
+/* 去掉图片的边框 */
+a img { border: none; }
+
+/* 关闭 */
+a.close{ background: url(img/close.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 开启 */
+a.open{ background: url(img/open.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 编辑 */
+a.edit{ background: url(img/icon_edit.gif) no-repeat;padding:0 0 0 20px; }
+
+/* 删除 */
+a.delete{ background: url(img/icon_delete.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 发送短信 */
+a.mail{ background: url(img/restore.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 添加 */
+a.add{ background: url(img/action_icon_add.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 搜索 */
+a.find{ background: url(img/derive.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 向上 */
+a.uparr{ background: url(img/up.png) no-repeat;padding:2px 0 0 20px; }
+
+/* 向下 */
+a.downarr{ background: url(img/down.png) no-repeat;padding:4px 0 0 20px; }
+
+/* 锁定 */
+a.freeze{ background: url(img/freeze.gif) no-repeat;padding:2px 0 0 20px; }
+
+/* 还原 */
+a.restore{ background: url(img/restore.gif) no-repeat;padding:2px 0 0 20px; }
+
+
+
+.data_bar{width:100px;height:8px; background:url(img/data_layer_bar1.gif) no-repeat;float:left; font-size:0;margin:3px 2px 0 0;}
+.data_bar2{height:8px; background:url(img/data_layer_bar2.gif) no-repeat;float:left;font-size:0;}
+

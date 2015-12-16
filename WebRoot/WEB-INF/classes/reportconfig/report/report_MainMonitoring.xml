@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="mainMonitoring" js="/wabacusdemo/js/demo.js,/wabacusdemo/js/testcallback.js,/webresources/script/validate.js" >
+			<report id="showMonitoring"  title="单位信息列表" type="editablelist" pagesize="3"  >
+				<display>
+					<col column="id" displaytype="hidden"></col>
+					<col column="UnitCode" label="单位编码" ></col>
+					<col column="UnitName" label="单位名称"></col>
+					<col column="UnitAddr" label="单位地址"  width="300px"></col>
+					<col column="HeadName" label="联系人"></col>
+					<col column="HeadTel" label="联系电话" ></col>
+					<col property="auxiliary" column="{non-fromdb}" label="辅助信息" width="80px"></col>
+					<col property="tag" column="{non-fromdb}" label="操作" width="60px"></col>
+					<col property="state" column="{non-fromdb}" label="设备状态" width="80px"></col>
+					<col property="video" column="{non-fromdb}" label="视频" width="60px"></col>
+					<col property="unitMap" column="{non-fromdb}" label="地图" width="60px"></col>
+					<col property="statistical" column="{non-fromdb}" label="统计" width="60px"></col>
+				</display>
+				<format>
+					<value>
+
+			   <![CDATA[
+					auxiliary="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=auxiliaryInfo&unitId="+id+"',{width:600,title:'辅助信息'})>"+"查看"+"</a>";
+			   		tag="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=tagPage&UnitId="+id+"',{width:400,height:200,title:'标定'})>"+"标定"+"</a>";
+			   		state="<a href='javascript:void(0);' onclick=wx_winpage('ShowReport.wx?PAGEID=machineIsUsed&UnitName="+UnitName+"',{width:700,title:'设备状态'})>"+"查看"+"</a>";
+			   		video="<a href='javascript:void(0);'  onclick=wx_winpage('admin/video/video_play.action?unitId="+id+"',{width:800,height:450,title:'播放视频'})>"+"查看"+"</a>";
+			   		unitMap="<a href='javascript:void(0);'  onclick=wx_winpage('admin/unitMap/unitMap_load.action?unitId="+id+"',{width:600,height:400,title:'单位地图'})>"+"查看"+"</a>";
+			   		statistical="<a href='javascript:void(0);'  onclick=wx_winpage('admin/eventStatistical/eventStatistical_load.action?unitId="+id+"',{width:800,height:600,title:'统计信息'})>"+"查看"+"</a>";
+			   	]]>
+			  </value>
+				</format>
+				<sql>
+					<select>
+						<value>
+						<![CDATA[select UnitInfo.* from UnitInfo where UnitType='联网单位' and {#condition#}]]>
+					</value>
+<!-- 					<condition name="txtUnitType" hidden="true">
+							<value>
+								<![CDATA[UnitType='联网单位']]>
+							</value>
+					</condition> -->
+					<condition name="txtUnitName" label="单位名称" labelposition="left" left="10">
+							<value>
+								<![CDATA[UnitName like  '%#data#%' ]]>
+							</value>
+							<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="联网单位" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtTagType" label="标定类型"  labelposition="left" left="10">
+						<value>
+							<![CDATA[TagName like  '%#data#%' ]]>
+						</value>
+						<inputbox type="selectbox">
+								<option label="全部" value=""></option>
+								<option dataset="@{select distinct TypeName from TagType}"  label="TypeName" value="TypeName"></option>
+						</inputbox>
+					</condition>
+					<condition name="txtEventName" label="事件类型"  labelposition="left" left="10"  right="10">
+					<value>
+						<![CDATA[id = (select UnitId from EventInfo where EventName like  '%#data#%' and year(HappenTime)=year(getdate()) and month(HappenTime)=month(getdate()) )]]>
+						</value>
+						<inputbox type="selectbox" label="单位名称"  >
+								<option label="全部" value=""></option>
+								<option  label="火警" value="火警"></option>
+								<option  label="屏蔽" value="屏蔽"></option>
+								<option  label="故障" value="故障"></option>
+						</inputbox>
+					</condition>
+					</select>
+				</sql>
+			</report>
+</page>
+</applications> 

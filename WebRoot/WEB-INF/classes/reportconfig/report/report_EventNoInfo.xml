@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="EventNoInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js"
+		interceptor="com.ccu.pageInterceptor.EventNoInfoPageInterceptor">
+		<report id="showEventNoInfo" title="事件基本信息列表" type="editablelist" rowselect="single"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" filter="condition{txtUnitName}"></col>
+				<col column="EventName" label="事件名称" width="60px"></col>
+				<col column="MachineCode" label="传输装置编号"></col>
+				<col column="AlertMachine" label="报警设备" width="60px"></col>
+				<col column="AlertSource" label="报警源"></col>
+				<col column="AlertDescription" label="描述信息" width="100px"></col>
+				<col column="HappenPlace" label="发生地点" width="100px"></col> 
+				<col column="EventTypeId" label="事件类型" displaytype="hidden"></col>	
+				<col column="TypeName" label="事件类型" updatecol="@{EventTypeId}" width="60px" displaytype="hidden"></col>			
+				<col column="HappenTime" label="发生时间" datatype="timestamp" width="150px"></col>
+				<col column="IsHandle" label="是否处理" width="60px"></col>			
+				<col column="IsFalseReport" label="是否误报" width="60px"></col>
+				<col column="{editablelist-edit}" label="操作"  width="60px"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT e.*,t.TypeName FROM EventInfo e,EventType t where e.EventTypeId=t.id and IsHandle='False' and{#condition#} order by HappenTime desc]]>
+					</value>
+					 <condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(e.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+					<condition name="txtMachineCode" label="设备编码" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(e.MachineCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="MachineCode" title="设备编码" matchmode="anywhere"></promptcol>
+						       <promptcol label="MachineName" title="设备名称"></promptcol>
+						       <datasource>        
+						       		<option dataset="@{select MachineCode,MachineName from MachineInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtEventName" label="事件名称" left="10" labelposition="left" br="true"> 
+						<value>
+							<![CDATA[(e.EventName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="EventName" title=" 事件名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select EventName from EventInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtEventType" label="事件类型" left="10" labelposition="left">
+					     <value>
+							<![CDATA[(t.TypeName like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" >
+						      <option label="全部" value=""></option>
+						      <option dataset="@{select TypeName from EventType}" label="TypeName" value="TypeName"></option>
+					     </inputbox>
+				    </condition>
+					<condition name="txtIsFalseReport" label="是否误报" left="30" labelposition="left" br="true">
+						     <value>
+							<![CDATA[(e.IsFalseReport =#data#)]]>
+						</value>
+						     <inputbox type="selectbox">
+							      <option value="" label="全部"></option>
+							      <option value="1" label="是"></option> 
+							      <option value="0" label="否"></option>
+						     </inputbox>
+					    </condition>
+						<condition name="txtQEventTime" datatype="" label="起始时间" labelposition="left"  left="10">
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[e.HappenTime >= '#data#']]>
+						</value>
+					</condition>
+					<condition name="txtZEventTime" datatype="" label="终止时间" labelposition="left"  left="10"  right="15" >
+						<inputbox  type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" styleproperty="style='width:150px'"></inputbox>
+						<value>
+							<![CDATA[e.HappenTime <= '#data#']]>
+						</value>
+					</condition>
+				</select>
+				<!-- <insert pageurl="report{editforlistpageEventInfo.report_update_add}" popupparams="{title:'新增事件信息'}" pageinitsize="max"/> -->
+				<update pageurl="report{editforlistpageEventNoInfo.report_update_add}" urlparams="txtid=@{id}" popupparams="{title:'编辑事件资料',width:700,height:380}"/>
+			</sql>
+			<format>
+				<value>
+					IsHandle=IsHandle==null?"":IsHandle.trim();
+					if(IsHandle.equals("0")) IsHandle="否";
+					else if(IsHandle.equals("1")) IsHandle="是";
+					IsFalseReport=IsFalseReport==null?"":IsFalseReport.trim();
+					if(IsFalseReport.equals("0")) IsFalseReport="否";
+					else if(IsFalseReport.equals("1")) IsFalseReport="是";
+					
+			  </value>
+			  
+			</format>
+		</report>
+	</page>
+	
+	<page id="editforlistpageEventNoInfo" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="form" title="事件详情">
+			<display valuetdwidth="120px" labeltdwidth="60px" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" ></col>
+				<col column="MachineCode" label="设备编码"></col>
+				<col column="AlertMachine" label="报警设备"  br="true"></col>
+				<col column="AlertSource" label="报警源" ></col>
+				<col column="HappenTime" label="发生时间" datatype="timestamp" ></col>
+				<col column="HappenPlace" label="发生地点"  br="true"></col>
+				
+				<col column="EventDescription" label="事件说明"  valuestyleproperty="colspan='5'" br="true">
+					<inputbox type="textareabox" styleproperty="rows='3'"></inputbox>
+				</col>
+				<col column="EventTypeId" label="事件类型" displaytype="hidden"></col><!--
+				<col column="TypeName" label="事件类型" updatecol="@{EventTypeId}"></col>	
+				-->
+				<col column="EventName" label="事件名称" ></col>
+				<col column="AlertDescription" label="描述信息"></col>
+				<col column="IsFalseReport" label="是否误报" br="true" >
+					<inputbox type="radiobox" servervalidate="isNotEmpty(#data#请选择是否误报)">		 
+							      <option label="是" value="1"></option>
+							      <option label="否" value="0"></option>
+					 </inputbox>
+				</col>
+				<col column="IsHandle" label="是否处理" >
+					<inputbox type="radiobox">		 
+							      <option label="是" value="1"></option>
+							      <option label="否" value="0"></option>
+					 </inputbox>
+				</col>
+				<col column="HandleTime" label="处理时间" datatype="timestamp">
+					<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" ></inputbox>
+				</col>
+				<col column="HandleUserId" label="处理人" displaytype="hidden"></col>
+				<col column="HandleUser" label="处理人" updatecol="@{HandleUserId}" br="true">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(#data#处理人不能为空)">		
+						<option label="--请选择--" value=""></option>
+						<option dataset="@{select UserInfo.id,UserInfo.Account from UserInfo where {#condition#} }"  label="Account" value="Account">
+							<datasetconditions>
+								<condition name="id" source="session{userId}"  hidden="true">
+									<value>
+										<![CDATA[(id = '#data#' )]]>
+									</value>
+								</condition>
+							</datasetconditions>
+						</option>					
+					</inputbox>
+				</col>				
+				<col column="HandleDescription" label="处理说明"  valuestyleproperty="colspan='5'" br="true">
+					<inputbox type="textareabox" styleproperty="rows='3'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT e.*,t.TypeName FROM EventInfo e,EventType t where e.EventTypeId=t.id and {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(e.id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<!--  <insert>
+				<params>
+					<param name="createUser" value="session{userId}"/>
+				</params>
+		  		 	insert into EventInfo (id=newid(),@{UnitId},@{UnitName},@{UnitAddr},@{ContactTel},@{MachineCode},@{AlertMachine},@{AlertSource},@{AlertDescription},@{HappenPlace},@{EventTypeId},@{EventName},@{HappenTime},@{EventDescription},@{HandleUserId},@{HandleDescription},@{HandleTime},@{IsHandle},@{IsFalseReport}); 
+			  	</insert>-->
+			  	<update>
+			  		<params>
+						<param name="handleUser" value="session{userId}"/>
+						<param name="currentdate" value="now{}" datatype="timestamp"></param>
+					</params>
+			  		update EventInfo (@{IsHandle},@{IsFalseReport},@{AlertDescription},@{HandleDescription},@{HandleUser},HandleUserId=#{handleUser},HandleTime=#{currentdate}) where id = @{id};
+			  	</update>
+			</sql>
+			<buttons>
+				<button name="saveEventInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'editforlistpageEventInfo',savingReportIds:[{reportid:'report_update_add',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_update_add",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_update_add",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+</applications>

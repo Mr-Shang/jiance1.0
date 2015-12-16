@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="tagPage"  js="/webresources/script/validate.js"  >
+		<report id="showTagPage"   type="editabledetail2"  title="单位标定">
+			<display  labelbgcolor="#f0f0f0" labelalign="center" valuealign="center"> 	
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" br="true" valuestyleproperty="colspan='3'"></col>
+				<col column="TagName"  label="标定类型"   >
+							<inputbox type="selectbox"  servervalidate="isNotEmpty(${invalid.isnotempty})">
+							      <option dataset="@{select distinct TypeName from TagType}" label="TypeName" value="TypeName"></option>
+						     </inputbox>
+				</col>
+				<col column="TagTime" label="开始时间" clickorderby="true" datatype="date{yyyy-MM-dd}"  br="true">
+					<inputbox type="datepicker" jsvalidate="isDate(#data#格式不对，必须为yyyy-MM-dd格式)">
+					</inputbox>
+				</col>
+				<col column="TagNote" label="备注"  datatype="clob" valuestyleproperty="colspan='3'"> 
+					<inputbox type="textareabox"></inputbox>
+				</col>
+				<col column="IsRemove" displaytype="hidden"></col>
+				
+			</display>
+
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select * from UnitInfo  where id =  {#condition#}]]>
+					</value>
+					<condition name="UnitId" hidden="true">
+						<value>
+							<![CDATA[( '#data#' )]]>
+						</value>
+					</condition>
+				</select>
+				<update>
+					update UnitInfo(@{TagName},@{TagTime},@{TagNote}) where id=@{id};
+					update UnitInfo(IsRemove=1) where id=@{id} and TagName='测试';
+					update UnitInfo(IsRemove=0) where id=@{id} and TagName!='测试';
+				</update>
+			</sql>
+			<buttons>
+				<button name="saveTag" position="title" label="保存">
+					saveEditableReportData({pageid:'tagPage',savingReportIds:[{reportid:'showTagPage',updatetype:'save'}]});
+				</button>
+				
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showTagPage",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		<!-- rrequest.authorize("showLogicGraphic",Consts.BUTTON_PART,"type{add}","display","false"); -->
+				</preaction>
+			</interceptor>
+		</report>
+	
+	</page>
+</applications>

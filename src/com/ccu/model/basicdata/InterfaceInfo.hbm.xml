@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2015-5-7 9:42:44 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.ccu.model.basicdata.InterfaceInfo" table="InterfaceInfo" catalog="jiance">
+        <id name="id" type="string">
+            <column name="id" length="36" />
+            <generator class="guid" />
+        </id>
+        <property name="machineCode">
+            <column name="MachineCode" not-null="true" sql-type="nvarchar(50)"  />
+        </property>
+        <property name="interfaceName">
+            <column name="InterfaceName" not-null="true" sql-type="nvarchar(50)" />
+        </property>
+        <property name="interfaceType">
+            <column name="InterfaceType" sql-type="nvarchar(50)" />
+        </property>
+        <property name="port" type="java.lang.Integer">
+            <column name="Port" />
+        </property>
+        <property name="singnalName">
+            <column name="SingnalName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="maxValue" type="java.lang.Double">
+            <column name="MaxValue" precision="53" scale="0" />
+        </property>
+        <property name="minValue" type="java.lang.Double">
+            <column name="MinValue" precision="53" scale="0" />
+        </property>
+        <property name="referenceValue" type="java.lang.Double">
+            <column name="ReferenceValue" precision="53" scale="0" />
+        </property>
+        <property name="isUsed" type="java.lang.Boolean">
+            <column name="IsUsed" />
+        </property>
+        <property name="expressionKey">
+            <column name="ExpressionKey" sql-type="nvarchar(50)" />
+        </property>
+        <property name="orderIndex" type="java.lang.Integer">
+            <column name="OrderIndex" not-null="true" />
+        </property>
+        <property name="nomalValue" type="java.lang.Double">
+            <column name="NomalValue" precision="53" scale="0" />
+        </property>
+        <property name="nomalShowName">
+            <column name="NomalShowName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="exceptShowName">
+            <column name="ExceptShowName" sql-type="nvarchar(50)" />
+        </property>
+        <property name="unit">
+            <column name="Unit" sql-type="nvarchar(50)" />
+        </property>
+    </class>
+</hibernate-mapping>

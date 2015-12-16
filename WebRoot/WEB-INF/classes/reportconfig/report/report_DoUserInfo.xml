@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	
+		<page id="updateUser" js="/webresources/script/validate.js"
+			interceptor="com.ccu.pageInterceptor.updateUserPageInterceptor">
+		<report id="report_update" type="form" title="用户资料">
+			<display valuetdwidth="100px" labeltdwidth="70px" labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden"></col>
+				<col column="Account" label="账户名" >
+				<!-- 	<inputbox jsvalidate="isNotEmpty(#data#账户名不能为空)"  styleproperty="style='width:95%'"></inputbox> -->
+				</col>
+				<col column="Password" label="密码"   >
+					<!-- <inputbox jsvalidate="isNotEmpty(#data#密码不能为空)" styleproperty="style='width:95%'"></inputbox> -->
+				</col>
+				<col column="UserName" label="姓名" br="true">
+			<!-- 		<inputbox jsvalidate="isNotEmpty(#data#姓名不能为空)" styleproperty="style='width:95%'"></inputbox> -->
+				</col>
+				<col column="UserTel" label="联系方式" >
+					<!-- <inputbox jsvalidate="isNotEmpty(#data#联系方式不能为空)" styleproperty="style='width:95%'"></inputbox> -->
+				</col>
+				<col column="UserMail" label="邮箱" br="true" valuestyleproperty="colspan='3'">
+				<!-- 	<inputbox jsvalidate="isNotEmpty(#data#邮箱不能为空);isEmail(#请输入合法的邮箱地址)"  styleproperty="style='width:98%'"></inputbox> -->
+				</col>
+				<col column="CreateUserId" label="创建者" displaytype="hidden" ></col>
+				<col column="CreateUser" label="创建者"  updatecol="@{CreateUserId}"></col>
+				<col column="CreateTime" label="创建时间" br="true" datatype="timestamp" valuestyleproperty="colspan='3'" >
+				<!-- 	<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" ></inputbox> -->
+				</col>
+				<col column="UpdateUserId" label="更新者" displaytype="hidden"></col>
+				<col column="UpdateUser" label="更新者" updatecol="@{UpdateUserId}"></col>
+				<col column="UpdateTime" label="更新时间" br="true" datatype="timestamp" valuestyleproperty="colspan='3'">
+<!-- 					<inputbox type="datepicker" dateformat="yyyy-MM-dd HH:mm:ss" ></inputbox> -->
+				</col>
+				<col column="UnitId" label="所属单位"  >
+<!-- 					 <inputbox type="selectbox" servervalidate="isNotEmpty(#data#请选择所属单位)"  styleproperty="style='width:95%'">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox> -->
+				</col>
+				<col column="IsManager" label="是否是管理者" valuestyleproperty="colspan='3'" br="true">
+<!-- 					 <inputbox type="radiobox">
+						 <option value="1" label="是"></option> 
+						 <option value="0" label="否"></option>
+					 </inputbox> -->
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT user1.*,user2.Account as CreateUser,user3.Account as UpdateUser,unit.UnitName FROM UserInfo user1,UserInfo user2,UserInfo user3,UnitInfo unit where unit.id = user1.UnitId and user2.id=user1.CreateUserId and user3.id=user1.UpdateUserId and {#condition#}]]>
+					</value>
+					<condition name="txtid" source="session{userId}"  hidden="true" >
+					<value>
+						<![CDATA[(user1.id = '#data#' )]]>
+					</value>
+				</condition>
+				</select>
+				<!--<insert>
+				<params>
+					<param name="createUser" value="session{userId}"/>
+				</params>
+		  		 	insert into UserInfo (id=newid(),@{Account},@{Password},@{UserName},@{UserTel},@{UserMail},CreateUserId=#{createUser},@{CreateTime},UpdateUserId=#{createUser},@{UpdateTime},@{UnitId},@{IsManager});
+			  	</insert>
+			  	-->
+<!-- 			  	<update>
+			  	<params>
+					<param name="updateUser" value="session{userId}"/>
+				</params>
+			  		update UserInfo (@{Account},@{Password},@{UserName},@{UserTel},@{UserMail},UpdateUserId=#{updateUser},UpdateTime=getdate(),@{UnitId},@{IsManager}) where id = @{id};
+			  	</update> -->
+			  	
+			</sql>
+<!-- 			<buttons>
+				<button name="saveUser" position="title" label="保存">
+					saveEditableReportData({pageid:'updateUserInfo',savingReportIds:[{reportid:'report_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor> -->
+		</report>
+	</page>
+</applications>

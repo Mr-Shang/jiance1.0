@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC 
+	"-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" 
+	"http://struts.apache.org/dtds/struts-2.1.dtd" >
+<struts>
+	<!-- OGNL可以使用静态方法 -->
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"/>	
+	<package name="jiance"  extends="struts-default">
+		<global-results>
+			<!-- 错误页面 -->
+            <result name="error">/WEB-INF/pages/common/show_error.jsp</result>
+            <!--管理员登录-->
+            <result name="userLogin">/WEB-INF/pages/user_login.jsp</result>
+            <!-- 后台管理主页面 -->
+            <result name="manager">/WEB-INF/pages/admin/main.jsp</result>
+        </global-results>
+		<global-exception-mappings>
+			<exception-mapping result="error" exception="com.ccu.util.AppException"></exception-mapping>
+		</global-exception-mappings>
+	</package>
+	<package name="jiance.admin" namespace="/admin" extends="jiance">
+		<!-- 配置拦截器 -->
+		<interceptors>
+			<!-- 验证用户登录的拦截器 -->
+			<interceptor name="loginInterceptor" class="com.ccu.action.interceptor.UserLoginInterceptor"/>
+			<interceptor-stack name="adminDefaultStack">
+				<interceptor-ref name="loginInterceptor"/>
+    			<interceptor-ref name="defaultStack"/>
+			</interceptor-stack>
+		</interceptors>
+		<action name="admin_*"  class="userAction" method="{1}">
+			<result name="down">/WEB-INF/pages/admin/down.jsp</result>
+            <result name="center">/WEB-INF/pages/admin/center.jsp</result>
+			<result name="top">/WEB-INF/pages/admin/top_new.jsp</result>
+            <result name="left">/WEB-INF/pages/admin/left_new.jsp</result>
+            <result name="right">/WEB-INF/pages/admin/right_new.jsp</result>
+            
+            <result name="urp">/WEB-INF/pages/rp_main.jsp</result>
+            <result name="urpleft">/WEB-INF/pages/urp_left.jsp</result>
+            <result name="urpright">/WEB-INF/pages/urp_right.jsp</result>
+			<result name="urpcenter">/WEB-INF/pages/urp_center.jsp</result>
+			<result name="urpmain1">/WEB-INF/pages/rp_main1.jsp</result>
+
+            <interceptor-ref name="adminDefaultStack"/>
+		</action>
+		<action name="user_*" method="{1}" class="userAction">
+			<result name="userLogin">/WEB-INF/pages/user_login.jsp</result>
+			<!-- 后台管理主页面 -->
+		</action>
+	</package>
+
+	<package name="jiance.admin.user" namespace="/admin/user" extends="jiance">
+		<action name="user_*" method="{1}" class="userAction"></action>
+	</package>
+	<!-- 事件处理 -->
+	<package name="event-ajax-package" namespace="/admin" extends="json-default">
+		<action name="eventAjax_*" class="com.ccu.action.basicdata.EventAction" method="{1}">
+			<!-- 主机监控 -->
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<!-- 事件处理 -->
+			<result name="handleEvent" type="json">
+				<param name="root">returnParam</param>
+			</result>
+		</action>
+		
+		<!-- 报警数 -->
+		<action name="eventCount_*" class="eventAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<result name="count" type="json">
+				<param name="root">eventCount</param>
+			</result>
+		</action>
+	</package>
+	<package name="rtu-ajax-package" namespace="/admin" extends="json-default">
+		<action name="machine_*" class="machineAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+		</action>
+	</package>
+	<!-- 事件统计-->
+	<package name="jiance.admin.event" namespace="/admin/eventStatistical" extends="json-default">
+	
+		<action name="eventStatistical_*" class="eventStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<result name="success">
+				/WEB-INF/pages/statistical/eventStatistical.jsp
+			</result>
+		</action>
+		<!-- 事件报表 -->
+		<action name="eventReport_*" class="eventStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonCount</param>
+			</result>
+			<result name="jsonAll" type="json">
+				<param name="root">jsonAllInfo</param>
+			</result>
+			<result name="info">
+				/WEB-INF/pages/statistical/eventReport.jsp
+			</result>
+		</action>
+		<!-- 柱状图 -->
+		<action name="statistical_*" class="eventStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonAllCount</param>
+			</result>
+			<result name="success">
+				/WEB-INF/pages/statistical/statistical.jsp
+			</result>
+		</action>
+		<action name="eventType_*" class="eventStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonTypeInfo</param>
+			</result>
+		</action>
+		<action name="eventInfo_*" class="eventStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonEventInfo</param>
+			</result>
+		</action>
+	</package>
+	<!-- 接口统计-->
+	<package name="jiance.admin.interface" namespace="/admin/interfaceStatistical" extends="json-default">
+		<action name="interfaceStatistical_*" class="interfaceStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<result name="success">
+				/WEB-INF/pages/statistical/interfaceStatistical.jsp
+			</result>
+		</action>
+	</package>
+	<!-- 查岗统计 -->
+	<package name="jiance.admin.check" namespace="/admin/checkStatistical" extends="json-default">
+		<action name="checkStatistical_*" class="checkStatisticalAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<result name="success">
+				/WEB-INF/pages/statistical/checkStatistical.jsp
+			</result>
+		</action>
+	</package>
+	<!-- 地图 -->
+	<package name="jiance.admin.map" namespace="/admin/unitMap" extends="json-default">
+		<action name="unitMap_*" class="unitMapAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+			<!-- 单位地图 -->	
+			<result name="success">
+				/WEB-INF/pages/unitMap/unitMap.jsp
+			</result>
+			<!-- 全单位地图（报警） -->	
+			<result name="info">
+				/WEB-INF/pages/unitMap/newMap.jsp
+			</result>
+		</action>
+		<!-- 获取单位坐标 -->
+		<action name="getUnitSite_*" class="unitMapAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">siteJSONArray</param>
+			</result>
+		</action>
+		<!-- 单位列表 -->
+		<action name="getUnitName_*" class="unitMapAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">nameJSONArray</param>
+			</result>
+		</action>
+	</package>
+	<!-- 设备评估 -->
+	<package name="jiance.admin.evaluate" namespace="/admin/evaluate" extends="json-default">
+		<action name="machineEvaluate_*" class="machineEvaluate" method="{1}">
+			<result name="success">
+				/WEB-INF/pages/statistical/machineEvaluate.jsp
+			</result>
+			<result name="table2">
+				/WEB-INF/pages/statistical/table2.jsp
+			</result>
+			<result name="table3">
+				/WEB-INF/pages/statistical/table3.jsp
+			</result>
+			<!-- 根据单位统计 表-->
+			<result name="jsonUnit" type="json">
+				<param name="root">unitJSONArray</param>
+			</result>
+			<!-- 根据设备统计 表 -->
+			<result name="jsonMachine" type="json">
+				<param name="root">machineJSONArray</param>
+			</result>
+			<!-- 根据设备统计 图 -->
+			<result name="jsonCount1" type="json">
+				<param name="root">count1JSONArray</param>
+			</result>
+			<!-- 根据单位统计 图-->
+			<result name="jsonCount2" type="json">
+				<param name="root">count2JSONArray</param>
+			</result>
+		</action>
+		
+	</package>
+	<!-- 事件类型-->
+	<!-- <package name="jiance.admin.eventType" namespace="/admin/eventType" extends="json-default">
+		<action name="eventType_*" class="com.ccu.action.basicdata.EventTypeAction" method="{1}">
+			<result name="json" type="json">
+				<param name="root">jsonArray</param>
+			</result>
+		</action>
+	</package> -->
+	
+	<package name="jiance.admin.video" namespace="/admin/video" extends="jiance">
+		<action name="video_*" class="videoAction" method="{1}">
+			<result name="play">
+				/WEB-INF/pages/video/video.jsp
+			</result>
+		</action>
+	</package>
+		<package name="jiance.admin.crt" namespace="/admin/crt" extends="jiance">
+		<action name="crt_*" class="crtAction" method="{1}">
+			<result name="drow">
+				/WEB-INF/pages/crt/crt.jsp
+			</result>
+		</action>
+	</package>
+</struts>

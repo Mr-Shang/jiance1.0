@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="testNode" js="/wabacusblank/js/papercreate.js">
+		<report id="showTsetNode" title="抽检率为计算" type="editablelist">
+			<display>
+				<col column="{sequence:1}" label="序号"/>
+				<col column="id" displaytype="hidden"/>
+				<col column="UnitId" displaytype="hidden"></col>
+				<col column="NodeName" label="节点名称"  width="150px"/>
+				<col column="NodeType" label="节点类型"/>
+				<col column="MachineIndex" label="主机号"/>
+				<col column="MachineLoop" label="回路"/>
+				<col column="Node" label="节点"/>
+				<col column="Count" label="测试次数"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select *,Count=(select count(*) from EventTest where NodeInfo.MachineIndex=EventTest.MachineIndex and NodeInfo.MachineLoop=EventTest.MachineLoop and NodeInfo.Node=EventTest.Node) from NodeInfo where {#condition#}]]>
+					</value>
+					<condition name="id" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitId = '#data#')]]>
+						</value>
+					</condition> 
+				</select>
+				
+				<!--<insert>
+					insert into NodeInfo(@{NodeName},@{NodeType},@{MachineIndex},@{Loop},@{Node},@{UnitId},@{MachineCode});
+				</insert>
+				<update>
+					update NodeInfo(@{NodeName},@{NodeType},@{MachineIndex},@{Loop},@{Node}) where id=@{id};
+				</update>
+				--><!--<delete>
+					delete from NodeInfo where id=@{id};
+				</delete>
+			--></sql>
+		<buttons buttonspacing="5">
+				<button name="num" label="计算抽检率" position="title">
+						
+				</button>
+			</buttons>
+		</report>	
+	</page>
+</applications>

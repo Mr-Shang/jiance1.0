@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="eventType" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.eventTypePageInterceptor">
+<!-- 		<report id="showEventType" title="事件类型信息列表" type="editablelist">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="TypeName" label="事件类型"></col>
+				<col column="UnitName" label="所属单位"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select EventType.*,UnitInfo.UnitName from EventType,UnitInfo where UnitInfo.id = EventType.UnitId]]>
+					</value>
+				</select>
+				
+				<insert pageurl="report{editforlistpageEventType.report_update_add}" popupparams="{title:'新增事件类型信息'}" pageinitsize="max"/> 
+				<update pageurl="report{editforlistpageEventType.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑事件类型资料'}"/>
+				
+				<delete>
+					<value>
+						delete from EventType where id = @{id};
+					</value>
+				</delete>
+			</sql>
+		</report>
+		<report id="addEventType" title="添加/修改事件类型" type="form" depends="showEventType" dependsparams="id=@{id}">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="TypeName" label="事件类型">
+					<inputbox type="textbox" jsvalidate="isNotEmpty(#data#事件类型不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位">
+					 <inputbox type="selectbox">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM EventType where  {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+					     <value>
+							<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select>
+				<insert refreshparentonsave="showEventType|true">
+		  		 	insert into EventType (id=newid(),@{TypeName},@{UnitId});
+			  	</insert>
+			  	<update refreshparentonsave="showEventType">
+			  		update EventType (@{TypeName},@{UnitId}) where id = @{id};
+			  	</update>
+			</sql>
+		</report> -->
+	
+	
+
+		<tabpanel id="tabpanel1" titleposition="top" titlestyle="2" border="0">
+			<vpanel id="vpanel11" parenttitle="报警主机事件类型" border="0">
+				<report id="showFireEventType" title="事件类型信息列表" type="editablelist2"
+					interceptor="com.ccu.reportInterceptor.reportInterceptor">
+					<display>
+					 	<col column="{sequence:1}" label="序号"></col>
+						<col column="id" displaytype="hidden"></col>
+						<col column="TypeName" label="事件类型" >
+							<inputbox jsvalidate="isNotEmpty(#data#所属单位不能为空)"></inputbox>
+						</col>
+					</display>
+					<sql>
+					<select>
+						<value>
+							<![CDATA[select EventType.* from EventType where EventType.UnitId is NULL]]>
+						</value>
+					</select>
+					<insert>
+		  		 		insert into EventType (id=newid(),@{TypeName});
+			  		</insert>
+			  		<update refreshparentonsave="showFireEventType">
+			  			update EventType (@{TypeName}) where id = @{id};
+			  		</update>
+					</sql>
+			<buttons buttonspacing="5">	
+				
+				<button name="addEventType" label="添加" position="title">
+					addListReportNewDataRow('eventType','showFireEventType');
+				</button>
+				<button name="saveEventType" position="title" label="保存">
+					saveEditableReportData({pageid:'eventType',savingReportIds:[{reportid:'showFireEventType',updatetype:'save'}]});
+				</button>
+				<button name="deleteEventType" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.EventType where id = @{id};
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showFireEventType",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showFireEventType",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+				</report><!--
+			<report id="addFireEventType" title="添加/修改事件类型" type="form" depends="showFireEventType" dependsparams="id=@{id}">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="TypeName" label="事件类型">
+					<inputbox type="textbox" jsvalidate="isNotEmpty(#data#事件类型不能为空)"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM EventType where  {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+					     <value>
+							<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select>
+				<insert refreshparentonsave="showFireEventType|true">
+		  		 	insert into EventType (id=newid(),@{TypeName});
+			  	</insert>
+			  	<update refreshparentonsave="showFireEventType">
+			  		update EventType (@{TypeName}) where id = @{id};
+			  	</update>
+			</sql>
+
+		</report>
+			-->
+		</vpanel>
+		<vpanel id="vpanel12"  parenttitle="特殊事件类型" border="0">
+			<report id="showSpecialEventType" title="事件类型信息列表" type="editablelist2"
+				interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{sequence:1}" label="序号"></col>
+				<col column="TypeName" label="事件类型" >
+					<inputbox jsvalidate="isNotEmpty(#data#所属单位不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" updatecol="@{UnitId}" filter="condition{txtUnitName}">
+					<inputbox type="selectbox" jsvalidate="isNotEmpty(#data#所属单位不能为空)">
+						<option dataset="@{select id,UnitName from UnitInfo where UnitType = '联网单位'}"
+							label="UnitName" value="id" />
+					</inputbox>
+				</col>
+				
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select EventType.*,UnitInfo.UnitName from EventType,UnitInfo where UnitInfo.id = EventType.UnitId and {#condition#} order by UnitInfo.UnitName desc]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"  hidden="true">
+						<value>
+							 <![CDATA[(UnitInfo.UnitName like %#data#%)]]>
+						</value>
+						  <inputbox type="selectbox">
+						      <option label="所属单位" value=""></option>
+						      <option dataset="@{select UnitName from UnitInfo where UnitType='联网单位'}" label="UnitName" value="UnitName"></option>
+					     </inputbox>
+					</condition>
+				</select>
+				<insert>
+		  		 	insert into EventType (id=newid(),@{TypeName},@{UnitId});
+			  	</insert>
+				<update >
+			  		update EventType (@{TypeName},@{UnitId}) where id = @{id};
+			  	</update>
+		<!-- 		<insert pageurl="report{editforlistpageEventType.report_update_add}" popupparams="{title:'新增事件类型信息'}" pageinitsize="max"/> 
+				<update pageurl="report{editforlistpageEventType.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑事件类型资料'}"/> -->
+			</sql>
+			<buttons>
+			<button name="addSpecialEventType" label="添加" position="title">
+					addListReportNewDataRow('eventType','showSpecialEventType');
+				</button>
+				<button name="saveSpecialEventType" position="title" label="保存">
+					saveEditableReportData({pageid:'eventType',savingReportIds:[{reportid:'showSpecialEventType',updatetype:'save'}]});
+				</button>
+				<button name="deleteSpecialEventType" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete dbo.EventType where id = @{id};
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showSpecialEventType",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showSpecialEventType",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+				<!--<report id="addEventType" title="添加/修改事件类型" type="form" depends="showEventType" dependsparams="id=@{id}">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="TypeName" label="事件类型">
+					<inputbox type="textbox" jsvalidate="isNotEmpty(#data#事件类型不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位">
+					 <inputbox type="selectbox">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM EventType where  {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+					     <value>
+							<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select>
+				<insert refreshparentonsave="showEventType|true">
+		  		 	insert into EventType (id=newid(),@{TypeName},@{UnitId});
+			  	</insert>
+			  	<update refreshparentonsave="showEventType">
+			  		update EventType (@{TypeName},@{UnitId}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+		--></vpanel>
+		</tabpanel>
+	</page>
+	
+	
+	<!-- 增加、修改弹出页面、暂时废弃 -->
+<!-- 	<page id="editforlistpageEventType" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="TypeName" label="事件类型">
+					<inputbox jsvalidate="isNotEmpty(#data#事件类型不能为空)"></inputbox>
+				</col>
+				<col column="UnitId" label="所属单位">
+					 <inputbox type="selectbox">
+							      <option label="请选择" value=""></option>
+							      <option dataset="@{select distinct id,UnitName from UnitInfo}" label="UnitName" value="id"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM EventType where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into EventType (id=newid(),@{TypeName},@{UnitId});
+			  	</insert>
+			  	<update>
+			  		update EventType (@{TypeName},@{UnitId}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page> -->
+</applications>

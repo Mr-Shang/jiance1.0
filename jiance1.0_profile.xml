@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hd>
+	<header-info>1C2600</header-info>
+	<flag>></flag>
+	<regular-list>
+		<regular1>^[0-9][0-9]-[0-9]-[0-9][0-9][0-9]\\D*||^[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9]\\D*</regular1>
+		<regular2>^[0-9][0-9]\\D*||^[0-9][0-9][0-9]\\D*</regular2>
+		<regular3>^[\u4E00-\u9FFF]\\D*</regular3> 										<!--  以汉字开头的所有字符串("^"代表开始      "\\D*"为通配所有非十进制的字符)-->
+	</regular-list>
+</hd>

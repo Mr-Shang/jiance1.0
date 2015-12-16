@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="linkCrtInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<report id="showLinkCrtInfo" title="crt基本信息列表" type="editablelist"
+			rowselect="multiple-checkbox">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="{sequence:1}" label="序号" width="80px"></col>
+				<col column="UnitName" label="所属单位" ></col>
+				<col column="MachineCode" label="传输装置编号"></col>
+				<col column="FilePath" label="文件地址"  width="300px"></col>		
+				<col column="IsUsed" label="是否可用" width="80px"></col>
+				<col column="Description" label="描述信息" width="330px"></col>
+				<col column="{editablelist-edit}" label="编辑"  width="80"></col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT CrtInfo.*,UnitInfo.UnitName FROM CrtInfo,UnitInfo where UnitInfo.id=CrtInfo.UnitId and {#condition#} ]]>
+					</value>
+					<condition name="txtUnitName" label="所属单位"   source="session{unitId}" hidden="true">
+						<value>
+							 <![CDATA[(CrtInfo.UnitId = '#data#')]]>
+						</value>
+					</condition>
+					<condition name="txtMachineCode" label="设备编码" left="10" labelposition="left"  right="15">
+						<value>
+							<![CDATA[(CrtInfo.MachineCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="MachineCode" title="设备编码" matchmode="anywhere"></promptcol>
+
+						       <datasource>        
+						       		<option dataset="@{select MachineCode from MachineInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					     </condition>
+				</select>
+				<!-- <insert pageurl="report{editforlistpageCrtInfo.report_update_add}" popupparams="{title:'新增crt信息'}" pageinitsize="max" /> -->
+				<update pageurl="report{editCrtInfo.report_update}" urlparams="txtid=@{id}"  popupparams="{title:'编辑crt资料',width:600,height:380}" />
+				<!-- <delete>
+					<value>
+						delete from CrtInfo where id = @{id};
+					</value>
+				</delete> -->
+			</sql>
+			<format>
+				<value>
+					IsUsed=IsUsed==null?"":IsUsed.trim();
+					if(IsUsed.equals("0")) IsUsed="否";
+					else if(IsUsed.equals("1")) IsUsed="是";
+			  </value>
+			</format>
+			<buttons buttonspacing="5">
+				<button name="addCrtrInfo" label="添加" position="title">
+					wx_winpage('ShowReport.wx?PAGEID=addLinkCrtInfo',{width:600,height:380,title:'上传Crt文件'});
+				</button>
+				<button name="deleteCrtInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+					delete from CrtInfo where id = @{id};
+				</button>
+			</buttons>
+		</report>
+	</page>
+	<page id="addLinkCrtInfo" js="/webresources/script/validate.js,/wabacusdemo/js/testcallback.js">
+		<report id="report_add" type="form" title="配置CRT">
+			<display valuetdwidth="120px" labeltdwidth="70px"
+				labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden"></col>
+				<col column="MachineCode"  label="传输装置编号" br="true">
+					<inputbox type="selectbox" servervalidate="isNotEmpty(#data#请选择所属单位)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value=""></option>
+						<option dataset="@{select distinct MachineCode from MachineInfo where MachineType = '传输装置'}"
+							label="MachineCode" value="MachineCode"></option>
+					</inputbox>
+				</col>
+				<col column="FilePath" label="文件地址">
+					<inputbox styleproperty="style='width:95%'" type="file" maxsize="10240" allowedtypes="jpg;png;gif" displaytype=" textbox" deletetype="2" savepath="relative{\crtfile\}" rooturl="/crtfile/" newfilename="{timestamp}"></inputbox>
+				</col>
+				<col column="IsUsed" label="是否可用"  br="true">
+					<inputbox type="radiobox" servervalidate="isNotEmpty(#data#请选择是否可用)">
+						<option label="是" value="1"></option>
+						<option label="否" value="0"></option>
+					</inputbox>
+				</col>
+				<col column="Description" label="描述信息" valuestyleproperty="colspan='3'" br="true" > 
+				<inputbox  type="textareabox" styleproperty="rows='3'"  >
+				
+				</inputbox>
+				</col>
+			</display>
+			<sql>
+				<!-- <select>
+					<value>
+						<![CDATA[SELECT * FROM CrtInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+						<value>
+						<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select> -->
+				<insert>
+				<params>
+					<param name="user" value="session{userId}"/>
+					<param name="unitId" value="session{unitId}"/>
+				</params>
+					insert into CrtInfo
+					(id=newid(),@{FilePath},@{MachineCode},UnitId=#{unitId},@{IsUsed},@{Description});
+				</insert>
+			</sql>
+			<buttons>
+				<button name="saveCrt" position="title" label="保存">
+					saveEditableReportData({pageid:'addLinkCrtInfo',savingReportIds:[{reportid:'report_add',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_add",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_add",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	<page id="editLinkCrtInfo"
+		js="/webresources/script/validate.js,/wabacusdemo/js/testcallback.js">
+		<report id="report_update" type="editabledetail">
+						<display valuetdwidth="120px" labeltdwidth="70px"
+				labelbgcolor="#f0f0f0" labelalign="center" valuealign="center">
+				<col column="id" displaytype="hidden"></col>
+				<col column="MachineCode"  label="传输装置编号" br="true">
+					<inputbox type="selectbox" servervalidate="isNotEmpty(#data#请选择所属单位)" styleproperty="style='width:98%'">
+						<option label="==请选择==" value=""></option>
+						<option dataset="@{select distinct MachineCode from MachineInfo where MachineType = '传输装置'}"
+							label="MachineCode" value="MachineCode"></option>
+					</inputbox>
+				</col>
+				<col column="FilePath" label="文件地址">
+					<inputbox styleproperty="style='width:95%'" type="file" maxsize="10240" allowedtypes="jpg;png;gif" displaytype=" textbox" deletetype="2" savepath="relative{\crtfile\}" rooturl="/crtfile/" newfilename="{timestamp}"></inputbox>
+				</col>
+				<col column="IsUsed" label="是否可用"  br="true">
+					<inputbox type="radiobox" servervalidate="isNotEmpty(#data#请选择是否可用)">
+						<option label="是" value="1"></option>
+						<option label="否" value="0"></option>
+					</inputbox>
+				</col>
+				<col column="Description" label="描述信息" valuestyleproperty="colspan='3'" br="true" > 
+				<inputbox  type="textareabox" styleproperty="rows='3'"  >
+				
+				</inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM CrtInfo where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+						<value>
+						<![CDATA[(id like '%#data#%' )]]>
+						</value>
+					</condition>
+				</select>
+				<!-- <insert>
+					insert into CrtInfo
+					(id=newid(),@{FilePath},@{FileType},@{UnitId},@{IsUsed},@{Description});
+				</insert> -->
+				<update>
+					update CrtInfo
+					(@{FilePath},@{MachineCode},@{IsUsed},@{Description}) where
+					id = @{id};
+				</update>
+			</sql>
+			<buttons>
+				<button name="saveCrt" position="title" label="保存">
+					saveEditableReportData({pageid:'editLinkCrtInfo',savingReportIds:[{reportid:'report_update',updatetype:'save'}]});
+				</button>
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>				
+	  	 			rrequest.authorize("report_update",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 			rrequest.authorize("report_update",Consts.BUTTON_PART,"type{reset}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+</applications>

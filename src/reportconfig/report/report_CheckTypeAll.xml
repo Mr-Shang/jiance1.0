@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="CheckTypeAll" width="450" height="150" js="/wabacusdemo/js/demo.js">
+		<report id="ShowCheckTypeAll" title="请选择查岗类型" type="editablelist2"  rowselect="single-radiobox">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="Type"></col>
+			</display>
+				<sql>
+					<select>
+						<value>
+							<![CDATA[select * from CheckType where {#condition#} order by id]]>
+						</value>
+					</select>
+				</sql>
+			<buttons  buttonspacing="10" align="right">
+				<button name="button1" position="title" label="确认">
+					getTypeAll('CheckTypeAll','ShowCheckTypeAll');
+				</button>
+			</buttons>
+			<footer>
+				<![CDATA[
+					<font color='red'>说明：</font><br/>
+					<font color='blue'>类型一：123</font><br/>
+					<font color='blue'>类型二：456</font><br/>
+					<font color='blue'>类型三：789</font><br/>
+				]]>
+			</footer>
+		</report>
+	</page>
+</applications>

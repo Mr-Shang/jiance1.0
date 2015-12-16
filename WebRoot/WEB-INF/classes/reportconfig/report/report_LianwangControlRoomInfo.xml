@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="linkControlRoomInfo" js="/wabacusdemo/js/demo.js,/webresources/script/validate.js">
+		<report id="showLinkControlRoomInfo" title="消控室基本信息列表" type="editablelist2" rowselect="multiple-checkbox">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="UnitId" label="所属单位" displaytype="hidden"></col>
+				<col column="UnitName" label="所属单位" width="200px" updatecol="@{UnitId}" >
+						
+				</col>
+				<col column="ControlRoomCode" label="消控室编号"  width="80px">
+					<inputbox jsvalidate="isNotEmpty(#data#消控室编号不能为空)"></inputbox>
+				</col>
+				<col column="ControlRoomName" label="消控室名称">
+					<inputbox jsvalidate="isNotEmpty(#data#消控室名称不能为空)"></inputbox>
+				</col>
+				<col column="RoomAddr" label="消控室所在地" width="300px"></col>
+				<col column="HeadName" label="负责人"></col>
+				<col column="CreateTime" label="创建时间"  datatype="date" clickorderby="true">
+					<inputbox  type="datepicker" dateformat="yyyy-MM-dd" styleproperty="style='width:150px'"></inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[select ControlRoomInfo.*, UnitInfo.UnitName from ControlRoomInfo,UnitInfo where  {#condition#} order by ControlRoomInfo.ControlRoomCode asc]]>
+					</value>
+					<condition name="txtUnitName"  source="session{userId}" hidden="true">
+						<value>
+							 <![CDATA[(ControlRoomInfo.UnitId = (select UnitId from UserInfo where id =  '#data#'))]]>
+						</value>
+					</condition>
+					<condition name="txtControlRoomCode" label="消控室编号" left="10" labelposition="left" >
+						<value>
+							<![CDATA[(ControlRoomInfo.ControlRoomCode like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" callbackmethod="testTypePromptCallBack">
+						       <promptcol label="ControlRoomCode" title="消控室编号" matchmode="anywhere"></promptcol>
+						
+						       <datasource>        
+						       		<option dataset="@{select ControlRoomCode from ControlRoomInfo where {#matchcondition#}}"></option>       
+						       	</datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtControlRoomName" label="消控室名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(ControlRoomInfo.ControlRoomName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="ControlRoomName" title="消控室名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select ControlRoomName from	ControlRoomInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+				
+<!-- 				<insert pageurl="report{editforlistpageControlRoomInfo.report_update_add}" popupparams="{title:'新增消控室信息'}" pageinitsize="max"/>
+				<update pageurl="report{editforlistpageControlRoomInfo.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑消控室资料'}"/> -->
+<!-- 				<delete>
+					<value>
+						delete from ControlRoomInfo where id = @{id};
+					</value>
+				</delete> -->
+				<insert>
+				<params>
+					<param name="user" value="session{userId}"/>
+					<param name="unitId" value="session{unitId}"/>
+				</params>
+					insert into ControlRoomInfo (id=newid(),@{ControlRoomName},@{ControlRoomCode},UnitId=#{unitId},@{RoomAddr},@{HeadName},@{CreateTime}); 
+				</insert>
+				<update>
+					update ControlRoomInfo (@{ControlRoomName},@{ControlRoomCode},@{RoomAddr},@{HeadName},@{CreateTime}) where id = @{id};
+				</update>
+				
+			</sql>
+			
+			<buttons buttonspacing="5">
+				<button name="addControlRoomInfo" label="添加" position="title">
+					addListReportNewDataRow('linkControlRoomInfo','showLinkControlRoomInfo');
+				</button>
+				<button name="saveControlRoomInfo" position="title" label="保存">
+					saveEditableReportData({pageid:'linkControlRoomInfo',savingReportIds:[{reportid:'showLinkControlRoomInfo',updatetype:'save'}]});
+				</button>
+				<button name="deleteControlRoomInfo" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete ControlRoomInfo where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+			<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showLinkControlRoomInfo",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showLinkControlRoomInfo",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+
+</applications>

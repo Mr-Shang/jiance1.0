@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="viewassessmentresults"  js="/wabacusdemo/js/demo.js,/wabacusdemo/js/testcallback.js,/webresources/script/validate.js"
+		interceptor="com.ccu.pageInterceptor.viewassessmentresultsPageInterceptor">
+		<tabpanel id="tabpanel2"  margin="10px" titlestyle="2"  titlewidth="150px" border="0">
+		<report id="showviewassessmentresults1" parenttitle="维保单位评估结果"  title="维保单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="{sequence:1}" label="序号" width="100px"></col>
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="UnitAddr" label="单位地址"  width="300px"></col>
+				<col property="unitlist" column="{non-fromdb}" label="操作" ></col>
+			</display>
+			<format>
+				<value>
+					<![CDATA[
+					unitlist="<a href='ShowReport.wx?PAGEID=assessmentresults&id="+id+"'>"+"查看评估结果"+"</a>";
+			   		]]>
+			  </value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='维保单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		<report id="showviewassessmentresults2" parenttitle="监控单位评估结果"  title="监控单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="{sequence:1}" label="序号" width="100px"></col>
+				<col column="id" displaytype="hidden" ></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="UnitAddr" label="单位地址"  width="300px"></col>
+				<col property="unitlist" column="{non-fromdb}" label="操作" ></col>
+			</display>
+			<format>
+				<value>
+					<![CDATA[
+					unitlist="<a href='ShowReport.wx?PAGEID=assessmentresults&id="+id+"'>"+"查看评估结果"+"</a>";
+			   		]]>
+			  </value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM UnitInfo where UnitType='监控单位' and {#condition#}]]>
+					</value>
+					<condition name="txtUnitName" label="单位名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(UnitName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="UnitName" title="单位名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select UnitName from	UnitInfo where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		<report id="showviewassessmentresults3" parenttitle="联网单位评估结果"  title="单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="{sequence:1}" label="序号" width="100px"></col>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="AssessmentTime" label="评估时间" displaytype="hidden"></col>
+				<col column="TestResult" label="抽检率" ></col>
+				<col column="GoodResult" label="完好率" ></col>
+			</display>
+			<subdisplay>
+				<statitems>
+					<statitem property="item1" value="avg(TestResult)" datatype="float"></statitem>
+					<statitem property="item2" value="avg(GoodResult)" datatype="float"></statitem>
+				</statitems>
+				<subrow displaytype="page|report">
+					<subcol property="sprop1" colspan="3" valuestyleproperty="bgcolor='#CCFAFF' align='center'"></subcol>
+				    <subcol property="sprop2" colspan="3" valuestyleproperty="bgcolor='#CCFAFF' align='cebter'"></subcol>
+			   </subrow>
+			   <format>
+			   		<imports>
+						<import>com.wabacus.util.*</import>
+					</imports>
+					<value>
+						<![CDATA[
+							sprop1="平均抽检率："+(Double.parseDouble(Tools.formatDouble(String.valueOf(item1),"#,###0.000")))*100+"%";
+							sprop2="平均完好率："+(Double.parseDouble(Tools.formatDouble(String.valueOf(item2),"#,###0.000")))*100+"%";
+						]]>
+					</value>
+				</format>
+			</subdisplay>
+			<format>
+				<imports>
+					<import>com.wabacus.*</import>
+				</imports>
+				<value>
+					<![CDATA[
+						TestResult = (Double.parseDouble(Tools.formatDouble(String.valueOf(TestResult),"#,###0.000")))*100+"%";
+						GoodResult = (Double.parseDouble(Tools.formatDouble(String.valueOf(GoodResult),"#,###0.000")))*100+"%";
+					]]>
+				</value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT Evaluate.* FROM UnitInfo,Evaluate where UnitInfo.UnitType='联网单位' and UnitInfo.id=Evaluate.UnitId and {#condition#}]]>
+					</value>
+					 <!-- <condition name="txtstartdate" label="几几年几月几号"> 
+                                        <value> 
+                                                <![CDATA[(AssessmentTime = '#data#')]]> 
+                                        </value> 
+                                        <inputbox type="datepicker" jsvalidate="isDate({0}格式不对，必须为yyyy-MM-dd格式)"></inputbox> 
+                                </condition>  -->
+				</select>
+				
+			</sql>
+		</report>
+		</tabpanel>
+	</page>
+	
+	
+	
+	<page id="assessmentresults"  js="/wabacusdemo/js/demo.js">
+		<tabpanel id="tabpanel3"  margin="10px" titlestyle="2"  titlewidth="150px">
+		<report id="showassessmentresults" parenttitle="联网单位"  title="单位基本信息列表" type="editablelist" >
+			<display>
+				<col column="{sequence:1}" label="序号" width="100px"></col>
+				<col column="id" displaytype="hidden"></col>
+				<col column="UnitName" label="单位名称" ></col>			
+				<col column="HeadName" label="联系人" ></col>
+				<col column="HeadTel" label="联系电话" ></col>
+				<col column="TestResult" label="抽检率" ></col>
+				<col column="GoodResult" label="完好率" ></col>
+			</display>
+			<subdisplay>
+				<statitems>
+					<statitem property="item1" value="avg(TestResult)" datatype="float"></statitem>
+					<statitem property="item2" value="avg(GoodResult)" datatype="float"></statitem>
+				</statitems>
+				<subrow displaytype="page|report">
+					<subcol property="sprop1" colspan="3" valuestyleproperty="bgcolor='#CCFAFF' align='center'"></subcol>
+				    <subcol property="sprop2" colspan="3" valuestyleproperty="bgcolor='#CCFAFF' align='cebter'"></subcol>
+			   </subrow>
+			   <format>
+			   		<imports>
+						<import>com.wabacus.util.*</import>
+					</imports>
+					<value>
+						<![CDATA[
+							sprop1="平均抽检率："+(Double.parseDouble(Tools.formatDouble(String.valueOf(item1),"#,###0.000")))*100+"%";
+							sprop2="平均完好率："+(Double.parseDouble(Tools.formatDouble(String.valueOf(item2),"#,###0.000")))*100+"%";
+						]]>
+					</value>
+				</format>
+			</subdisplay>
+			<format>
+				<imports>
+					<import>com.wabacus.*</import>
+				</imports>
+				<value>
+					<![CDATA[
+						TestResult = (Double.parseDouble(Tools.formatDouble(String.valueOf(TestResult),"#,###0.000")))*100+"%";
+						GoodResult = (Double.parseDouble(Tools.formatDouble(String.valueOf(GoodResult),"#,###0.000")))*100+"%";
+					]]>
+				</value>
+			</format>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM Evaluate where {#condition#}]]>
+					</value>
+					<condition name="id" hidden="true">
+						<value>
+							<![CDATA[UnitId = '#data#']]>
+						</value>
+					</condition>
+				</select>
+			</sql>
+		</report>
+		</tabpanel>
+	</page>
+</applications>

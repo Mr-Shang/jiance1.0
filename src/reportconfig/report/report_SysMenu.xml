@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<applications xmlns="http://www.wabacus.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wabacus.com ../xsd/wabacus.applications.xsd">
+	<page id="sysMenu"  js="/wabacusdemo/js/demo.js,/webresources/script/validate.js" interceptor="com.ccu.pageInterceptor.sysMenuPageInterceptor">
+		<report id="showSysMenu" title="系统菜单基本信息列表" type="editablelist2" rowselect="multiple-checkbox"
+			interceptor="com.ccu.reportInterceptor.reportInterceptor">
+			<display>
+				<col column="id" displaytype="hidden"></col>
+				<col column="{col-rowselect}" label="全选"  width="80px"></col>
+				<col column="MenuIndex" label="序号" width="100px" ></col>			
+				<col column="MenuName" label="菜单名称"></col>
+				<col column="MenuPid" label="父节点ID" filter="condition{txtPid}"></col>
+				<col column="MenuMid" label="节点ID" ></col>
+				<col column="MenuPath" label="菜单路径"  width="300px"></col>
+				<col column="Icon" label="图标"  width="260"></col>
+				
+				
+				<col column="IsParent" label="是否父节点" >
+					<inputbox type="radiobox" defaultvalue="0">
+						 <option value="1" label="是"></option> 
+						 <option value="0" label="否"></option>
+					 </inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM SysMenu where {#condition#} order by MenuIndex asc]]>
+					</value>
+					<condition name="txtPid" label="父节点ID" hidden="true">
+					     <value>
+							<![CDATA[(MenuPid like %#data#%)]]>
+						 </value>
+					     <inputbox type="selectbox" >
+						      <option label="父节点ID" value=""></option>
+						      <option label="无" value="" type="false"></option>
+						      <option dataset="@{select MenuPid from SysMenu }" label="MenuPid" value="MenuPid"></option>
+					     </inputbox>
+				    </condition>
+					<condition name="txtMenuName" label="菜单名称" left="10" right="10" labelposition="left"> 
+						<value>
+							<![CDATA[(MenuName like %#data#%)]]>
+						</value>
+						<inputbox>
+					        <typeprompt count="15" width="200" callbackmethod="testTypePromptCallBack">
+							       <promptcol label="MenuName" title="菜单名称" matchmode="anywhere"></promptcol>
+							       <datasource>
+								        <option dataset="@{select MenuName from	SysMenu where {#matchcondition#}}"></option>
+							       </datasource>
+					        </typeprompt>
+					     </inputbox>
+					</condition>
+					<condition name="txtIsParent" label="是否父节点" left="10" right="10" labelposition="left">
+					     <value>
+							<![CDATA[(IsParent=#data#)]]>
+						 </value>
+					     <inputbox type="selectbox" >
+						      <option label="全部" value=""></option>
+						      <option label="是" value="1" ></option>
+						      <option label="否" value="0" ></option>						
+					     </inputbox>
+				    </condition>
+				</select>
+				 <insert>
+		  		 	insert into SysMenu (id=newid(),@{MenuName},@{MenuPath},@{Icon},@{MenuPid},@{MenuMid},@{MenuIndex},@{IsParent});
+			  	</insert>
+			  	<update>
+			  		update SysMenu (@{MenuName},@{MenuPath},@{Icon},@{MenuPid},@{MenuMid},@{MenuIndex},@{IsParent}) where id = @{id};
+			  	</update>
+				<!-- <insert pageurl="report{editforlistpageSysMenu.report_update_add}" popupparams="{title:'新增菜单信息'}" pageinitsize="max"/>
+				
+				<update pageurl="report{editforlistpageSysMenu.report_update_add}" urlparams="txtid=@{id}" pageinitsize="max" popupparams="{title:'编辑菜单资料'}"/>
+				
+				<delete>
+					<value>
+						delete from SysMenu where id = @{id};
+					</value>
+				</delete> -->
+				 
+			</sql>
+			<format>
+				<value>
+					IsParent=IsParent==null?"":IsParent.trim();
+					if(IsParent.equals("0")) IsParent="否";
+					else if(IsParent.equals("1")) IsParent="是";
+			  </value>
+			</format>
+			<buttons buttonspacing="5">
+				<button name="addSysMenu" label="添加" position="title">
+					addListReportNewDataRow('sysMenu','showSysMenu');
+				</button>
+				<button name="saveSysMenu" position="title" label="保存">
+					saveEditableReportData({pageid:'sysMenu',savingReportIds:[{reportid:'showSysMenu',updatetype:'save'}]});
+				</button>
+				<button name="deleteSysMenu" class="com.wabacus.system.buttons.ServerSQLActionButton"  position="title" label="删除" >
+						delete from SysMenu where id = @{id};
+				</button><!--  在label定义按钮图片 -->
+			</buttons>
+				<interceptor>
+				<imports>
+	  				<import>com.wabacus.util.*</import>
+	  			</imports>
+				<preaction>
+					
+	  	 		rrequest.authorize("showSysMenu",Consts.BUTTON_PART,"type{save}","display","false");
+	  	 		rrequest.authorize("showSysMenu",Consts.BUTTON_PART,"type{add}","display","false");
+				</preaction>
+			</interceptor>
+		</report>
+	</page>
+	
+	<page id="editforlistpageSysMenu" js="/webresources/script/validate.js">
+		<report id="report_update_add" type="editabledetail">
+			<display valuetdwidth="100px" labeltdwidth="71px" labelbgcolor="#f0f0f0" labelalign="right" valuealign="left">
+				<col column="id" displaytype="hidden"></col>
+				<col column="MenuName" label="菜单名称" clickorderby="true"></col>
+				<col column="MenuPath" label="菜单路径" clickorderby="true" br="true"></col>
+				<col column="Icon" label="图标" clickorderby="true">
+					<inputbox type="file" maxsize="10240" allowedtypes="jpg;gif;png" displaytype="image" deletetype="2" savepath="relative{\uploadfile\}" rooturl="/uploadfile/"></inputbox>
+				</col>
+				<col column="MenuPid" label="父节点ID" clickorderby="true" br="true"></col>
+				<col column="MenuMid" label="节点ID" clickorderby="true"></col>
+				<col column="MenuIndex" label="序号" clickorderby="true" br="true"></col>
+				<col column="IsParent" label="是否为父节点" clickorderby="true">
+					<inputbox type="radiobox" jsvalidate="isNotEmpty(#请确认是否为父节点)">
+						<option label="是" value="1"></option>
+						<option label="否" value="0"></option>
+					</inputbox>
+				</col>
+			</display>
+			<sql>
+				<select>
+					<value>
+						<![CDATA[SELECT * FROM SysMenu where {#condition#}]]>
+					</value>
+					<condition name="txtid" hidden="true">
+					<value>
+						<![CDATA[(id like '%#data#%' )]]>
+					</value>
+				</condition>
+				</select>
+				<insert>
+		  		 	insert into SysMenu (id=newid(),@{MenuName},@{MenuPath},@{Icon},@{MenuPid},@{MenuMid},@{MenuIndex},@{IsParent});
+			  	</insert>
+			  	<update>
+			  		update SysMenu (@{MenuName},@{MenuPath},@{Icon},@{MenuPid},@{MenuMid},@{MenuIndex},@{IsParent}) where id = @{id};
+			  	</update>
+			</sql>
+		</report>
+	</page>
+</applications>
